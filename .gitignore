@@ -1,0 +1,5 @@
+mysite/__pycache__
+mysite/blog/__pycache__
+mysite/mysite/__pycache__
+mysite/user/__pycache__
+env

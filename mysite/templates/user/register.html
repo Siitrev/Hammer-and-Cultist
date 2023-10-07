@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<div class="container py-5">
+    <h1>Register</h1>
+	{% if user_error %}
+	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		Username is already taken.
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	{% endif %}
+	{% if email_error %}
+	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		Email is already taken.
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	{% endif %}
+	{% if pass_error %}
+	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		Password doesn't satisfy described rules.
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	{% endif %}
+    <form method="POST">
+		{% csrf_token %}
+		{{ register_form|crispy }}                    
+		<button class="btn btn-primary" type="submit">Register</button>
+	</form>
+	<p class="text-center">If you already have an account, <a href="/user/login">login</a> instead.</p>
+</div>
+
+{% endblock content %}

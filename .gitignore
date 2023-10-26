@@ -4,3 +4,5 @@ mysite/blog/migrations/__pycache__
 mysite/mysite/__pycache__
 mysite/user/__pycache__
 env
+node_modules
+mysite/media/*

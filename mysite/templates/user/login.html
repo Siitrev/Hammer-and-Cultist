@@ -4,8 +4,16 @@
 
 {% load crispy_forms_tags %}
 
+
 <div class="container py-5">
     <h1>Login</h1>
+	{% if request.GET.next %}
+	<div class="alert alert-danger fade show" role="alert">
+		<ul class="m-0">
+			<li>To access this page you have to be logged in.</li>
+		</ul>
+	</div>
+	{% endif %}
     <form method="POST">
 		{% csrf_token %}
 		{{ login_form|crispy }}                    

@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .forms import NewUserForm
+from .models import Profile
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,10 +14,10 @@ from .token import account_activation_token, default_password_token
 from django.core.mail import EmailMessage
 # Create your views here.
 def register_request(request):
-    errors = {"user_error":False,"email_error":False,"pass_error":False}
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
+            to_email = form.cleaned_data.get("email")
             user = form.save(commit=False)
             user.is_active = False
             user.save()
@@ -27,24 +29,18 @@ def register_request(request):
                 "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                 "token": account_activation_token.make_token(user),
             })
-            to_email = form.cleaned_data.get("email")
             email = EmailMessage(mail_subject,message,to=[to_email])
             email.send()
             return render(request=request, template_name="user/token_send.html")
-        username = request.POST["username"]
-        email = request.POST["email"]
-        if User.objects.filter(username=username).exists():
-            errors["user_error"]=True
-        if User.objects.filter(email=email).exists():
-            errors["email_error"]=True
-        if not errors["user_error"] and not errors["email_error"]:
-            errors["pass_error"] = True
+        else:
+            return render(request=request, template_name="user/register.html", context={"register_form" : form})
     form = NewUserForm()
-    context = {"register_form":form}
-    context.update(errors)
-    return render(request=request, template_name="user/register.html", context=context)
+    return render(request=request, template_name="user/register.html", context={"register_form":form})
 
 def login_request(request):
+    next_path = ""
+    if "next" in request.GET:
+        next_path = request.GET["next"]
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -53,12 +49,14 @@ def login_request(request):
             user = authenticate(username=username,password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f"You are now logged in as {username}." )
+                messages.success(request, f"You are now logged in as {username} vruh {next_path}." )
+                if next_path != "":
+                    return redirect(next_path)
                 return redirect("home")
             else:
-                messages.error(request,"Invalid username or password.")
+                return render(request=request, template_name="user/login.html", context={"login_form":form})
         else:
-            messages.error(request,"Invalid username or password")
+            return render(request=request, template_name="user/login.html", context={"login_form":form})
     form = AuthenticationForm()
     return render(request=request, template_name="user/login.html", context={"login_form":form})
 
@@ -82,7 +80,6 @@ def activate(request, uidb64, token):
     
 
 def password_reset_request(request):
-    errors = {"email_error":False}
     if request.method == "POST":
         form = PasswordResetForm(data=request.POST)
         if form.is_valid():
@@ -90,6 +87,9 @@ def password_reset_request(request):
             if User.objects.filter(email=to_email).exists():
                 user = User.objects.get(email=to_email)
                 current_site = get_current_site(request)
+            else:
+                form.add_error("email")
+                return render(request=request, template_name="user/password_reset.html", context={"password_reset_form":form, "email_error" : True})
             mail_subject = "Password reset link"
             message = render_to_string("user/acc_reset_pass.html",{
                 "user": user,
@@ -100,12 +100,10 @@ def password_reset_request(request):
             email = EmailMessage(mail_subject,message,to=[to_email])
             email.send()
             return render(request=request, template_name="user/password_reset_send.html")
-                
-        errors["email_error"]=True
+        else:
+            return render(request=request, template_name="user/password_reset.html", context={"password_reset_form":form})
     form = PasswordResetForm()
-    context = {"password_reset_form":form}
-    context.update(errors)
-    return render(request=request, template_name="user/password_reset.html", context=context)
+    return render(request=request, template_name="user/password_reset.html", context={"password_reset_form":form})
 
 def password_reset_change(request,uidb64,token):
     User = get_user_model() 
@@ -127,4 +125,11 @@ def password_reset_change(request,uidb64,token):
             return render(request=request, template_name="user/password_reset_change.html", context={"change_password_form":form})
         else:  
             return render(request=request, template_name="user/error.html")
-    
+
+@login_required
+def user_profile(request, username):
+    if request.path.endswith(f"{username}/"):
+        user_profile = Profile.objects.filter(user=request.user.id).values()
+        return HttpResponse(f"{username}")
+    else:
+        return HttpResponse("nie masz dostepu")

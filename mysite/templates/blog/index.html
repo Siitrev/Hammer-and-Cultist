@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<header class="masthead">
+<header class="masthead bg-light">
     <div class="overlay"></div>
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-10 mx-auto">
                 <div class="site-heading">
-                    <h3 class=" site-heading my-4 mt-3 text-white"> Welcome to my awesome Blog </h3>
-                    <p class="text-light">We Love Django As much as you do..! &nbsp
+                    <h3 class="site-heading my-4 mt-3 text-white"> Hello adventurer! </h3>
+                    <p class="text-light">Come here, take a seat near campfire and tell us about your story&hellip;
                     </p>
                 </div>
             </div>
@@ -15,31 +15,191 @@
     </div>
 </header>
 {% for message in messages %}
-{{ message }}
+{{ message }} <br>
 {% endfor %}
-<div class="container">
-    <div class="row">
+<div class="section">
+    <div class="row mx-0">
+        <div class="col-12 bg-secondary bg-gradient text-center py-4">
+            <h1>Most liked posts</h1>
+        </div>
+    </div>
+</div>
+<div class="container bg-light">
+    <div class="row pt-3 justify-content-center">
         <!-- Blog Entries Column -->
-        <div class="col-md-8 mt-3 left">
-            {% for post in post_list %}
-            <div class="card mb-4">
-                <div class="row g-0">
-                    <div class="d-flex col-lg-5 align-items-center">
-                        <img src="{{ post.image.url }}" class="img-fluid rounded-start" alt="Thumbnail">
+        <div class="col mb-3">
+            <div id="mostLikedPosts" class="carousel slide h-100" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                {% for post in post_list %}
+                  <div class="carousel-item{% if forloop.counter0 == 0 %} active{% endif %}" data-bs-interval="2000">
+                    <div class="card mb-3 shadow-none h-100">
+                        <div class="d-lg-none d-block">
+                            <div class="row g-0">
+                                <div class="d-flex col-12 align-items-center">
+                                    <img src="{{ post.image.url }}" class="img-fluid rounded-start" alt="Thumbnail">
+                                </div>
+                            </div>
+                            <div class="row g-0">
+                                <div class="col-12">
+                                    <div class="card-body">
+                                      <h2 class="card-title">{{ post.title }}</h2>
+                                      <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
+                                      <p class="card-text">{{post.content|slice:":200" }}{% if post.content|length > 199 %}&hellip;{% endif %}</p>
+                                      <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
+                                    </div>
+                                  </div>
+                            </div>       
+                        </div>
+                        <div class="d-lg-block d-none">
+                            <div class="row">
+                                <div class="col-5">
+                                    <img src="{{ post.image.url }}" class="img-fluid rounded-start" alt="Thumbnail">
+                                </div>
+                                <div class="col-7">
+                                    <div class="card-body h-100">
+                                      <h2 class="card-title">{{ post.title }}</h2>
+                                      <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
+                                      <p class="card-text">{{post.content|slice:":200" }}{% if post.content|length > 199 %}&hellip;{% endif %}</p>
+                                      <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
+                                    </div>
+                                </div>
+                            </div>       
+                        </div>
                     </div>
-                    <div class="col-lg-7">
-                      <div class="card-body">
-                        <h2 class="card-title">{{ post.title }}</h2>
-                        <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
-                        <p class="card-text">{{post.content|slice:":100" }}&hellip;</p>
-                        <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr; {{ dupa }}</a>
+                  </div>
+                  {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#mostLikedPosts" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#mostLikedPosts" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+        </div>
+    </div>
+</div>
+<div class="section">
+    <div class="row mx-0">
+        <div class="col-12 bg-secondary bg-gradient text-center py-4">
+            <h1>All posts</h1>
+        </div>
+    </div>
+</div>
+<div class="container bg-light">
+    <div class="row pt-3 justify-content-center">
+        <div class="col-12 col-lg-3 mb-3">
+            <form action="" method="get">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                          Sort
+                        </button>
+                      </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="form-floating mb-2">
+                                <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                                  <option value="1">Date</option>
+                                  <option value="2">Author</option>
+                                  <option value="3">Title</option>
+                                </select>
+                                <label for="floatingSelect">Works with selects</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort-direction" id="flexRadioDefault1" checked>
+                                <label class="form-check-label" for="sort-direction">
+                                  Descending
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort-direction" id="flexRadioDefault1">
+                                <label class="form-check-label" for="sort-direction">
+                                  Ascending
+                                </label>
+                            </div>                                                                                                                   
+                        </div>
                       </div>
                     </div>
-                  </div>          
-            </div>
-            {% endfor %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Filter
+                          </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                          <div class="accordion-body" method="get">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Campaign" id="campaignCheck">
+                                <label class="form-check-label" for="campaignCheck">
+                                    Campaign
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Session idea" id="sessionCheck">
+                                <label class="form-check-label" for="sessionCheck">
+                                    Session idea
+                                </label>
+                            </div>   
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Adventure" id="adventureCheck">
+                                <label class="form-check-label" for="adventureCheck">
+                                    Adventure
+                                </label>
+                            </div>   
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Greg" id="gregCheck">
+                                <label class="form-check-label" for="gregCheck">
+                                    Greg
+                                </label>
+                            </div>   
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Drij" id="drijCheck">
+                                <label class="form-check-label" for="drijCheck">
+                                    Drij
+                                </label>
+                            </div>   
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Yas" id="yasCheck">
+                                <label class="form-check-label" for="yasCheck">
+                                    Yas
+                                </label>
+                            </div>                   
+                          </div>
+                        </div>
+                    </div>                
+                </div>    
+                <button class="btn btn-outline-secondary rounded-pill w-100 mt-3" type="submit">Apply</button>               
+            </form>
         </div>
-        {% block sidebar %} {% include 'blog/sidebar.html' %} {% endblock sidebar %}
+        <div class="col-12 col-lg-9">
+            <div class="row">
+                {% for post in post_list %}
+                <div class="col-12 col-sm-6 col-lg-4 mb-3">
+                    <div class="card mb-3 shadow-none h-100">
+                        <div class="row g-0">
+                            <div class="d-flex col-12 align-items-center">
+                                <img src="{{ post.image.url }}" class="img-fluid rounded-start" alt="Thumbnail">
+                            </div>
+                        </div>
+                        <div class="row g-0">
+                            <div class="col-12">
+                                <div class="card-body">
+                                    <h2 class="card-title">{{ post.title }}</h2>
+                                    <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
+                                    <p class="card-text">{{post.content|slice:":100" }}{% if post.content|length > 99 %}&hellip;{% endif %}</p>
+                                    <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
+                                </div>
+                            </div>
+                        </div>       
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {%endblock content %}

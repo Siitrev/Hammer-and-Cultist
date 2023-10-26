@@ -144,3 +144,5 @@ EMAIL_USE_TLS=True
 
 EMAIL_HOST_USER='hammer.and.cultists@gmail.com'
 EMAIL_HOST_PASSWORD='zsbgvzqzarkiecom '
+
+LOGIN_URL = "/user/login"

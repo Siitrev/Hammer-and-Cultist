@@ -88,8 +88,8 @@ def password_reset_request(request):
                 user = User.objects.get(email=to_email)
                 current_site = get_current_site(request)
             else:
-                form.add_error("email")
-                return render(request=request, template_name="user/password_reset.html", context={"password_reset_form":form, "email_error" : True})
+                form.add_error("email", error="Account with given email doesn't exist.")
+                return render(request=request, template_name="user/password_reset.html", context={"password_reset_form":form})
             mail_subject = "Password reset link"
             message = render_to_string("user/acc_reset_pass.html",{
                 "user": user,
@@ -118,7 +118,7 @@ def password_reset_change(request,uidb64,token):
             form.save()
             return render(request=request, template_name="user/password_reset_success.html")
         else:
-            return render(request=request, template_name="user/password_reset_change.html", context={"change_password_form":form, "form_errors": form.errors})
+            return render(request=request, template_name="user/password_reset_change.html", context={"change_password_form":form})
     else:  
         if user is not None and default_password_token.check_token(user, token):
             form = SetPasswordForm(user=user)
@@ -126,10 +126,5 @@ def password_reset_change(request,uidb64,token):
         else:  
             return render(request=request, template_name="user/error.html")
 
-@login_required
 def user_profile(request, username):
-    if request.path.endswith(f"{username}/"):
-        user_profile = Profile.objects.filter(user=request.user.id).values()
-        return HttpResponse(f"{username}")
-    else:
-        return HttpResponse("nie masz dostepu")
+    return render(request=request, template_name="user/user_profile.html")

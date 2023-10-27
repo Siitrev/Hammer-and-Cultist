@@ -20,7 +20,7 @@ class NewUserForm(UserCreationForm):
                 'password1',
                 'password2'
             ),
-            Submit('submit', 'Register', css_class='button white'),
+            Submit('submit', 'Register', css_class='btn btn-secondary mb-2'),
         )
         self.helper["username"].update_attributes(css_class="dupa")
     

@@ -4,23 +4,24 @@
 
 {% load crispy_forms_tags %}
 
-
-<div class="container py-5">
-    <h1>Login</h1>
-	{% if request.GET.next %}
-	<div class="alert alert-danger fade show" role="alert">
-		<ul class="m-0">
-			<li>To access this page you have to be logged in.</li>
-		</ul>
+<div class="d-flex flex-column h-100 align-items-center">
+	<div class="container my-lg-5 my-auto">
+		<h1>Login</h1>
+		{% if request.GET.next %}
+		<div class="alert alert-danger fade show" role="alert">
+			<ul class="m-0">
+				<li>To access this page you have to be logged in.</li>
+			</ul>
+		</div>
+		{% endif %}
+		<form method="POST">
+			{% csrf_token %}
+			{{ login_form|crispy }}                    
+			<button class="btn btn-primary" type="submit">Login</button>
+			<p class="text-center">Forgot your password? Click <a href="/user/reset-password">here</a> to reset it.</p>
+		</form>
+		<p class="text-center">If you don't have an account, <a href="/user/register">register</a> instead.</p>
 	</div>
-	{% endif %}
-    <form method="POST">
-		{% csrf_token %}
-		{{ login_form|crispy }}                    
-		<button class="btn btn-primary" type="submit">Login</button>
-		<p class="text-center">Forgot your password? Click <a href="/user/reset-password">here</a> to reset it.</p>
-	</form>
-	<p class="text-center">If you don't have an account, <a href="/user/register">register</a> instead.</p>
 </div>
 
 {% endblock content %}

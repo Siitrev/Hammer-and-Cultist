@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .forms import NewUserForm
-from .models import Profile
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -127,4 +126,8 @@ def password_reset_change(request,uidb64,token):
             return render(request=request, template_name="user/error.html")
 
 def user_profile(request, username):
-    return render(request=request, template_name="user/user_profile.html")
+    try:
+        user_profile = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return HttpResponse("Twoja stara cie boli chybads")
+    return render(request=request, template_name="user/user_profile.html", context={"username" : username, "user_profile":user_profile})

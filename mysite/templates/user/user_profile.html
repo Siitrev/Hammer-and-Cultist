@@ -3,11 +3,25 @@
 <div class="d-flex flex-column justify-content-center align-items-center h-100">
     <div class="card w-75 shadow">
         <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
+          <div class="row">
+            <div class="col-3">
+              {% load static %}
+              <img class="img-fluid" src="{{ user_profile.profile.avatar.url }}" alt="user-profile-picture">
+            </div>
+            <div class="col-9">
+              <div class="col-12">
+                <p>Username:</p>
+                <p>{{ user_profile.username }}</p>
+              </div>
+              <div class="col-12">
+                <p>Bio:</p>
+                <p>{{ user_profile.profile.bio }}</p>
+              </div>
+            </div>
+          </div>
+          {% if user.is_authenticated and user.username == username %}
+          <a href="#" class="card-link">Edit profile</a>
+          {% endif %}
         </div>
     </div>
 </div>

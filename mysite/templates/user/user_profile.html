@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex flex-column justify-content-center align-items-center h-100">
-    <div class="card w-75 shadow">
+<div class="container bg-light py-5">
+  <div class="d-flex flex-column align-items-center h-100">
+    <div class="card w-100 shadow">
         <div class="card-body">
           <div class="row">
             <div class="col-3">
@@ -23,6 +24,26 @@
           <a href="#" class="card-link">Edit profile</a>
           {% endif %}
         </div>
+        <hr>
+        <div class="bg-secondary w-100 align-middle text-center py-3">
+          <p class="display-5 m-0">Best {{user_profile.username}}'s posts</p>
+        </div>
+        {% for post in user_posts %}
+        <div class="card shadow-none h-100">
+          <div class="row p-3">
+              <div class="col-12">
+                <div class="col-12 clearfix float-start">
+                  <img src="{{ post.image.url }}" class="img-fluid rounded-top" alt="Thumbnail">
+                </div>
+                  <h2 class="card-title fs-5">{{ post.title }}</h2>
+                  <h2 class="card-text text-muted fs-5">Likes: {{ post.likes }}</h2>
+                  <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
+                  <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary align-self-baseline">Read More &rarr;</a>
+              </div>
+          </div>       
+      </div>
+      {% endfor %}
     </div>
+  </div>
 </div>
 {% endblock content %}

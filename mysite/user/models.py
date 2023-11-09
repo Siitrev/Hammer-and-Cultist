@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.models import User
+from blog.models import Post
+import datetime
 
 def img_path(instance, filename):
     ext = filename[-4:]
@@ -16,4 +18,13 @@ class Profile(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField(max_length=200, default="")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.author.username
     

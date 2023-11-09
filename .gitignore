@@ -6,3 +6,4 @@ mysite/user/__pycache__
 env
 node_modules
 mysite/media/*
+mysite/staticfiles

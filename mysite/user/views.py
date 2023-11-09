@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .forms import NewUserForm
+from blog.models import Post
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -130,4 +131,5 @@ def user_profile(request, username):
         user_profile = User.objects.get(username=username)
     except User.DoesNotExist:
         return HttpResponse("Twoja stara cie boli chybads")
-    return render(request=request, template_name="user/user_profile.html", context={"username" : username, "user_profile":user_profile})
+    user_posts = Post.objects.filter(author = user_profile.pk).order_by("-likes").values()[:3]
+    return render(request=request, template_name="user/user_profile.html", context={"username" : username, "user_profile":user_profile, "user_posts": user_posts})

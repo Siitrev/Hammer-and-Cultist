@@ -20,5 +20,15 @@ class PostDetail(generic.DetailView):
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         post_id = context["post"].id
-        context["comments"] = Comment.objects.filter(post_id=post_id).order_by("created_on")
+        context["maxCom"] = kwargs["new_max"]
+        context["comments"] = Comment.objects.filter(post_id=post_id).order_by("created_on")[:context["maxCom"]]
         return context
+    
+    def get(self, request, slug):
+        self.object = self.get_object()
+        if "maxCom" in request.GET:
+            new_max = int(request.GET["maxCom"]) + 10
+        else:
+            new_max = 10
+        context = self.get_context_data(object=self.object, new_max=new_max)
+        return render(request, self.template_name, context=context)

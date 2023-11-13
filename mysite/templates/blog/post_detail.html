@@ -12,13 +12,31 @@
     </div>
     <div class="row">
       {% for comment in comments %}
-      <div class="col-12 border border-secondary">
-        {% load static %}
-        <img class="img-fluid" alt="No nic" src="{{ comment.author.profile.avatar.url }}">
-        <a href="/user/profile/{{ comment.author }}"><p class="fs-4 text-muted">{{ comment.author }}</p></a>
-        <p class="fs-5">{{ comment.content }}</p>
+      <div class="col-12 d-none d-xxl-block border border-secondary">
+        <div class="row py-2">
+          <div class="col-1 my-auto">
+            <img class="img-avatar" alt="User_avatar" src="{{ comment.author.profile.avatar.url }}">
+          </div>
+          <div class="col-11">
+            <a href="/user/profile/{{ comment.author }}"><p class="fs-4 text-muted">{{ comment.author }}</p></a>
+            <p class="fs-5">{{ comment.content }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 d-none d-md-block d-xxl-none border border-secondary">
+        <div class="row py-2">
+          <div class="col-2 my-auto">
+            <img class="img-avatar" alt="User_avatar" src="{{ comment.author.profile.avatar.url }}">
+          </div>
+          <div class="col-10">
+            <a href="/user/profile/{{ comment.author }}"><p class="fs-4 text-muted">{{ comment.author }}</p></a>
+            <p class="fs-5">{{ comment.content }}</p>
+          </div>
+        </div>
       </div>
       {% endfor %}
+      <form class="d-none" action="" method="get" id="moreComments"></form>
+      {% if comments|length >= maxCom %}<button type="submit" form="moreComments" name="maxCom" value="{{ maxCom }}">Show more comments</button>{% endif %}
     </div>
   </div>
 </div>

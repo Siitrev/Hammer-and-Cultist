@@ -2,43 +2,43 @@
 {% block content %}
 
 <div class="container">
-  <div class="row">
+  <div class="row g-0 mb-2">
     <div class="col-md-12 card mb-4 mt-3">
       <div class="card-body">
-        <h1>{% block title %} {{ object.title }} {% endblock title %}</h1>
+        <h1>{{ post.title }}</h1>
         <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
-        <p class="card-text ">{{ object.content | safe }}</p>
+        <p class="card-text ">{{ post.content | safe }}</p>
       </div>
     </div>
-    <div class="row">
-      {% for comment in comments %}
-      <div class="col-12 d-none d-xxl-block border border-secondary">
-        <div class="row py-2">
-          <div class="col-1 my-auto">
-            <img class="img-avatar" alt="User_avatar" src="{{ comment.author.profile.avatar.url }}">
-          </div>
-          <div class="col-11">
-            <a href="/user/profile/{{ comment.author }}"><p class="fs-4 text-muted">{{ comment.author }}</p></a>
-            <p class="fs-5">{{ comment.content }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 d-none d-md-block d-xxl-none border border-secondary">
-        <div class="row py-2">
-          <div class="col-2 my-auto">
-            <img class="img-avatar" alt="User_avatar" src="{{ comment.author.profile.avatar.url }}">
-          </div>
-          <div class="col-10">
-            <a href="/user/profile/{{ comment.author }}"><p class="fs-4 text-muted">{{ comment.author }}</p></a>
-            <p class="fs-5">{{ comment.content }}</p>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-      <form class="d-none" action="" method="get" id="moreComments"></form>
-      {% if comments|length >= maxCom %}<button type="submit" form="moreComments" name="maxCom" value="{{ maxCom }}">Show more comments</button>{% endif %}
-    </div>
+    <section class="comments">
+
+    </section>
+    <!-- <div class="row mb-2 w-100">
+    </div> -->
+    <button type="button" form="moreComments" onclick="getComments()" id="maxCom" name="maxCom" value="0">Show more comments</button>
   </div>
 </div>
-
+<script>
+  async function getData() {
+    let url = "{% url 'post-comments' post.id %}";
+    let button = document.getElementById("maxCom");
+    let maxComs = parseInt(button.value) + 10;
+    let comments = parseInt("{{ comments_len }}");
+    if (maxComs >= comments){
+      button.setAttribute("class", "d-none");
+    }
+    const response = await fetch(url + "?" + new URLSearchParams({maxCom : maxComs}), {
+      method: "GET"
+    });
+    button.setAttribute("value", maxComs);
+    return response.text(); 
+  }
+  function getComments(){
+    getData().then(res=>{
+      if(res != undefined){
+        document.querySelectorAll("section.comments")[0].innerHTML = res;
+      }
+    });
+  }
+</script>
 {% endblock content %}

@@ -130,6 +130,6 @@ def user_profile(request, username):
     try:
         user_profile = User.objects.get(username=username)
     except User.DoesNotExist:
-        return HttpResponse("Twoja stara cie boli chybads")
+        return HttpResponse("Error")
     user_posts = Post.objects.filter(author = user_profile.pk).order_by("-likes").values()[:3]
     return render(request=request, template_name="user/user_profile.html", context={"username" : username, "user_profile":user_profile, "user_posts": user_posts})

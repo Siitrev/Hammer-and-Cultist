@@ -42,7 +42,7 @@
                                       <h2 class="card-title">{{ post.title }}</h2>
                                       <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
                                       <p class="card-text">{{post.content|slice:":200" }}{% if post.content|length > 199 %}&hellip;{% endif %}</p>
-                                      <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
+                                      <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
                                     </div>
                                   </div>
                             </div>       
@@ -57,7 +57,7 @@
                                       <h2 class="card-title">{{ post.title }}</h2>
                                       <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
                                       <p class="card-text">{{post.content|slice:":200" }}{% if post.content|length > 199 %}&hellip;{% endif %}</p>
-                                      <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
+                                      <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
                                     </div>
                                 </div>
                             </div>       
@@ -188,7 +188,7 @@
                                     <h2 class="card-title fs-5">{{ post.title }}</h2>
                                     <p class="card-text text-muted">{{ post.author }} | {{ post.created_on}} </p>
                                     <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
-                                    <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary align-self-baseline">Read More &rarr;</a>
+                                    <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-baseline">Read More &rarr;</a>
                                 </div>
                             </div>
                         </div>       

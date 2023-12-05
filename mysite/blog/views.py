@@ -1,5 +1,5 @@
 from typing import Any
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
 from django.views import generic
 from .models import Post
 from user.models import Comment
@@ -20,15 +20,20 @@ class PostDetail(generic.DetailView):
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         post_id = context["post"].id
-        context["maxCom"] = kwargs["new_max"]
-        context["comments"] = Comment.objects.filter(post_id=post_id).order_by("created_on")[:context["maxCom"]]
+        context["comments_len"] = len(Comment.objects.filter(post_id=post_id).order_by("created_on"))
         return context
     
     def get(self, request, slug):
         self.object = self.get_object()
-        if "maxCom" in request.GET:
-            new_max = int(request.GET["maxCom"]) + 10
-        else:
-            new_max = 10
-        context = self.get_context_data(object=self.object, new_max=new_max)
+        context = self.get_context_data(object=self.object)
         return render(request, self.template_name, context=context)
+    
+def post_comments(request, post_id):
+        if request.method == "GET":
+            maxCom = int(request.GET.get("maxCom"))
+            comments = Comment.objects.filter(post_id=post_id).order_by("created_on")
+            if (maxCom-1 >= len(comments)):
+                maxCom = len(comments)
+            context = {"comments" : Comment.objects.filter(post_id=post_id).order_by("created_on")[:maxCom]};
+            return render(request,"blog/post_comments.html", context=context)
+        return HttpResponse("Error. No get request")

@@ -30,15 +30,27 @@
         {% for post in user_posts %}
         <div class="card shadow-none h-100">
           <div class="row p-3">
-              <div class="col-12">
-                <div class="col-12 clearfix float-start">
-                  <img src="{{ post.image.url }}" class="img-fluid rounded-top" alt="Thumbnail">
-                </div>
-                  <h2 class="card-title fs-5">{{ post.title }}</h2>
-                  <h2 class="card-text text-muted fs-5">Likes: {{ post.likes }}</h2>
-                  <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
-                  <a href="{% url 'post_detail' post.slug  %}" class="btn btn-primary align-self-baseline">Read More &rarr;</a>
-              </div>
+            <!-- Show when screen is larger or equal lg -->
+            <div class="col-2 d-none d-lg-block">
+              <img src="{{ post.image.url }}" class="img-fluid rounded-top" alt="Thumbnail">
+            </div>
+            <div class="col-10 d-none d-lg-block">
+              <h2 class="card-title fs-5">{{ post.title }}</h2>
+              <h2 class="card-text text-muted fs-5">Likes: {{ post.likes }}</h2>
+              <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
+              <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-baseline">Read More &rarr;</a>
+            </div>
+
+            <!-- Show when screen is smaller than lg -->
+            <div class="col-12 d-block d-lg-none">
+              <img src="{{ post.image.url }}" class="rounded-top image-restriction" alt="Thumbnail">
+            </div>
+            <div class="col-12 d-block d-lg-none">
+              <h2 class="card-title fs-5">{{ post.title }}</h2>
+              <h2 class="card-text text-muted fs-5">Likes: {{ post.likes }}</h2>
+              <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
+              <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-baseline">Read More &rarr;</a>
+            </div>
           </div>       
       </div>
       {% endfor %}

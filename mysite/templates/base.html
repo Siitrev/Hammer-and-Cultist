@@ -44,7 +44,7 @@
                                 </li>
                                 <li><hr class="dropdown-divider mt-0"></li>
                                 <li class="text-black">
-                                    <a class="dropdown-item" href="/blog/create-post">Create post</a>
+                                    <a class="dropdown-item" href="/user/{{user.username}}/posts">My posts</a>
                                 </li>
                                 <li class="text-black">
                                     <a class="dropdown-item" href="/user/profile/{{ user.get_username }}">Profile</a>
@@ -62,7 +62,7 @@
                                   Account
                                 </a>
                                 <ul class="dropdown-menu bg-secondary">
-                                  <li><a class="dropdown-item text-black" href="/blog/create-post">Create post</a></li>
+                                  <li><a class="dropdown-item text-black" href="/user/{{user.username}}/posts">My posts</a></li>
                                   <li><a class="dropdown-item text-black" href="/user/profile/{{ user.get_username }}">Profile</a></li>
                                   <li><a class="dropdown-item text-black" href="/user/logout">Logout</a></li>
                                 </ul>

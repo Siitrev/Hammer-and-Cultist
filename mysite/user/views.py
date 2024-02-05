@@ -1,3 +1,5 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect, HttpResponse
 from .forms import NewUserForm
 from blog.models import Post
@@ -6,14 +8,17 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, PasswordResetForm
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import generic
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .token import account_activation_token, default_password_token
 from django.core.mail import EmailMessage
+from django.http import HttpRequest, HttpResponse
 # Create your views here.
-def register_request(request):
+def register_request(request : HttpRequest):
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
@@ -37,7 +42,7 @@ def register_request(request):
     form = NewUserForm()
     return render(request=request, template_name="user/register.html", context={"register_form":form})
 
-def login_request(request):
+def login_request(request : HttpRequest):
     next_path = ""
     if "next" in request.GET:
         next_path = request.GET["next"]
@@ -49,7 +54,7 @@ def login_request(request):
             user = authenticate(username=username,password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f"You are now logged in as {username} vruh {next_path}." )
+                messages.success(request, f"You are now logged in as {username}." )
                 if next_path != "":
                     return redirect(next_path)
                 return redirect("home")
@@ -60,11 +65,11 @@ def login_request(request):
     form = AuthenticationForm()
     return render(request=request, template_name="user/login.html", context={"login_form":form})
 
-def logout_request(request):
+def logout_request(request : HttpRequest):
     logout(request)
     return redirect("home")
 
-def activate(request, uidb64, token):  
+def activate(request : HttpRequest, uidb64, token):  
     User = get_user_model()  
     try:  
         uid = force_str(urlsafe_base64_decode(uidb64))  
@@ -79,7 +84,7 @@ def activate(request, uidb64, token):
         return render(request=request, template_name="user/error.html")
     
 
-def password_reset_request(request):
+def password_reset_request(request : HttpRequest):
     if request.method == "POST":
         form = PasswordResetForm(data=request.POST)
         if form.is_valid():
@@ -126,10 +131,19 @@ def password_reset_change(request,uidb64,token):
         else:  
             return render(request=request, template_name="user/error.html")
 
-def user_profile(request, username):
+def user_profile(request : HttpRequest, username):
     try:
         user_profile = User.objects.get(username=username)
     except User.DoesNotExist:
-        return HttpResponse("Error")
-    user_posts = Post.objects.filter(author = user_profile.pk).order_by("-likes").values()[:3]
+        return HttpResponse("Given user does not exist.")
+    user_posts = Post.objects.filter(author = user_profile.pk).order_by("-likes")[:3]
     return render(request=request, template_name="user/user_profile.html", context={"username" : username, "user_profile":user_profile, "user_posts": user_posts})
+
+class UserPosts(LoginRequiredMixin, generic.ListView):
+    template_name = "user/user_posts.html"
+    
+    def get_queryset(self) -> QuerySet[Any]:
+        user = self.kwargs["username"]
+        queryset = Post.objects.filter(author_id__username=user)
+        return queryset
+    

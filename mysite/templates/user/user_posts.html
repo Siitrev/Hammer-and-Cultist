@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container my-posts h-75 overflow-y-auto overflow-x-hidden mb-2 mt-4 shadow border border-gray g-0">
+    <div class="row g-0">
+        {% for post in post_list %}
+        <div class="col pb-3">
+            <div class="rounded-0 border-0 border-bottom card shadow-none h-100">
+                <div class="row g-0">
+                    <div class="col">
+                        <div class="card-body d-flex flex-column h-100">
+                            <h2 class="card-title fs-5">{{ post.title }}</h2>
+                            <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
+                            <div>
+                                <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-baseline d-inline">Read</a>
+                                <a href="{% url 'post-detail' post.slug  %}" class="btn btn-danger align-self-baseline d-inline">Delete post</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>       
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<section class="container my-posts h-25 overflow-y-auto overflow-x-hidden my-2">
+    <div class="d-flex justify-content-end align-items-center">
+        <a href="/blog/{{user.username}}/create-post" class="btn btn-success align-self-baseline d-inline">Create post</a>
+    </div>
+</section>
+
+{% endblock content %}

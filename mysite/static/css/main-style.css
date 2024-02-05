@@ -35,3 +35,45 @@ body {
         height: auto;
     }
 } 
+
+.w-fit-content{
+    width: fit-content;
+    overflow: hidden;
+    display: inline-block;
+    height: fit-content;
+}
+
+.blur{
+    z-index: 3;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    visibility: hidden;
+}
+
+.position-rel{
+    position: relative;
+}
+
+.loading{
+    z-index: 4;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    visibility: hidden;
+}
+
+.image-restriction{
+    width: 100%;
+    height: 100%;
+    max-width: fit-content;
+    max-height: fit-content;
+}
+
+.resize-0{
+    resize: none;
+}

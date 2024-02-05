@@ -22,7 +22,6 @@ class NewUserForm(UserCreationForm):
             ),
             Submit('submit', 'Register', css_class='btn btn-secondary mb-2'),
         )
-        self.helper["username"].update_attributes(css_class="dupa")
     
     class Meta:
         model = User

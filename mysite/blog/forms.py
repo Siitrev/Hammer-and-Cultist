@@ -32,8 +32,8 @@ class CreatePostForm(forms.Form):
             Field('title'),
             Field('content', css_class="resize-0"),
             Field('image'),
-            Submit('create-btn', 'Create', css_class='btn btn-primary mb-2 d-inline'),
-            Submit('draft-btn', 'Draft', css_class='btn btn-primary mb-2 d-inline')
+            Submit('submit', 'Create', css_class='btn btn-primary mb-2 d-inline'),
+            Submit('submit', 'Draft', css_class='btn btn-primary mb-2 d-inline')
         )
         
     def clean_content(self):

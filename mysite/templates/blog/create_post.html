@@ -6,7 +6,7 @@
 
 <div class="container py-5">
     <h1>Create post</h1>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		{% crispy create_post_form %}  
 	</form>

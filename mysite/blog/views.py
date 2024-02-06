@@ -6,6 +6,8 @@ from .models import Post, Tag
 from .forms import CreatePostForm
 from user.models import Comment
 from django.db.models.functions import Lower
+from django.core.exceptions import ValidationError
+from .handle_file import save_file
 import json
 # Create your views here.
 
@@ -85,7 +87,15 @@ def index(request : HttpRequest):
 
 def create_post(request : HttpRequest, username : str):
     if request.method == "POST":
-        form = CreatePostForm(request.POST)
-        return render(request=request, template_name="blog/create_post.html", context={"create_post_form" : form})
+        form = CreatePostForm(request.POST, request.FILES)
+        if form.is_valid():
+            print(form.files)
+            img = form.files["image"]
+            try:
+                save_file(img)
+            except ValidationError as e:
+                form.add_error("image", e)
+                return render(request=request, template_name="blog/create_post.html", context={"create_post_form" : form})
+            return render(request=request, template_name="blog/create_post.html", context={"create_post_form" : form})
     form = CreatePostForm()
     return render(request=request, template_name="blog/create_post.html", context={"create_post_form":form})

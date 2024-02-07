@@ -17,6 +17,8 @@ from django.utils.encoding import force_bytes, force_str
 from .token import account_activation_token, default_password_token
 from django.core.mail import EmailMessage
 from django.http import HttpRequest, HttpResponse
+
+
 # Create your views here.
 def register_request(request : HttpRequest):
     if request.method == "POST":
@@ -141,6 +143,13 @@ def user_profile(request : HttpRequest, username):
 
 class UserPosts(LoginRequiredMixin, generic.ListView):
     template_name = "user/user_posts.html"
+    
+    def dispatch(self, request : HttpRequest, *args, **kwargs):
+        try:
+            user = User.objects.filter(username=self.kwargs["username"], pk=request.user.pk).get()
+        except User.DoesNotExist:
+            return HttpResponse("Forbidden resource", status=403)
+        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self) -> QuerySet[Any]:
         user = self.kwargs["username"]

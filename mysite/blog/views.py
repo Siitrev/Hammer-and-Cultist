@@ -15,7 +15,7 @@ import json, datetime
 # Create your views here.
 
 class PostList(generic.ListView):
-    queryset = Post.objects.filter(status=1).order_by("-likes")
+    queryset = Post.objects.filter(status=1).order_by("-likes")[:3]
     template_name = "blog/index.html"
     
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -90,6 +90,11 @@ def index(request : HttpRequest):
 
 @login_required(login_url="/user/login/")
 def create_post(request : HttpRequest, username : str):
+    try:
+        user = User.objects.filter(username=username, pk=request.user.pk).get()
+    except User.DoesNotExist:
+        return HttpResponse("Forbidden resource", status=403)
+    
     if request.method == "POST":
         form = CreatePostForm(request.POST, request.FILES)
         
@@ -139,3 +144,15 @@ def create_post(request : HttpRequest, username : str):
         return redirect("user-posts",username)
     form = CreatePostForm()
     return render(request=request, template_name="blog/create_post.html", context={"create_post_form":form})
+
+@login_required(login_url="/user/login/")
+def delete_post(request : HttpRequest, username : str, pk):
+    try:
+        user = User.objects.filter(username=username, pk=request.user.pk).get()
+    except User.DoesNotExist:
+        return HttpResponse("Forbidden resource", status=403)
+    pass
+
+    if request.method == "DELETE":
+        Post.objects.filter(id=pk).delete()
+        return HttpResponse("Success", status=200)

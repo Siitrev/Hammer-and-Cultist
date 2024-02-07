@@ -3,6 +3,7 @@ mysite/blog/__pycache__
 mysite/blog/migrations/__pycache__
 mysite/mysite/__pycache__
 mysite/user/__pycache__
+mysite/user/migrations/__pycache__
 env
 node_modules
 mysite/media/*

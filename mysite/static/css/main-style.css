@@ -77,3 +77,15 @@ body {
 .resize-0{
     resize: none;
 }
+
+@media screen and (max-width: 576px) {
+    .w-dynamic{
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 576px) {
+    .w-dynamic{
+        width: 25%;
+    }
+}

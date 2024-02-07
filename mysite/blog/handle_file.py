@@ -8,7 +8,7 @@ def validate_filename(name) -> str:
     filename : str  = urlsafe_base64_encode(force_bytes(name.strip()[:-4]))
     extension : str = name.strip()[-4:]
     pattern = re.compile(r"^[A-Za-z0-9-]+$")
-    print(filename)
+
     if not re.match(pattern, filename):
         raise ValidationError(("Name of the file should only contain alphanumerical characters or hyphens."), code="invalid filename")
     
@@ -25,6 +25,10 @@ def save_file(file):
     if not os.path.exists(path):
         os.makedirs(path)
         
-    with open(f"{path}/{filename}","wb+") as image:
+    final_path = f"{path}/{filename}"
+        
+    with open(final_path,"wb+") as image:
         for chunk in file.chunks():
             image.write(chunk)
+    
+    return final_path

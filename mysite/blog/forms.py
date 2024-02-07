@@ -1,7 +1,7 @@
 from django import forms
 from .models import TagsToPost, Post, Tag
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit
+from crispy_forms.layout import Layout, Field, Submit, Div
 
 class TagsToPostForm(forms.ModelForm):
     model = TagsToPost
@@ -24,6 +24,10 @@ class CreatePostForm(forms.Form):
     title = forms.CharField(max_length=200, label="Title")
     content = forms.CharField(widget=forms.Textarea(attrs={"rows" : "15"}))
     image = forms.ImageField(label="Thumbnail", allow_empty_file=False)
+    tags = forms.ModelChoiceField(queryset=Tag.objects.order_by("name"), label="Tags", required=False, empty_label="Choose a tag:")
+    chosen_tag_0 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
+    chosen_tag_1 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
+    chosen_tag_2 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,12 +35,15 @@ class CreatePostForm(forms.Form):
         self.helper.layout = Layout(
             Field('title'),
             Field('content', css_class="resize-0"),
+            Field('tags'),
+            Div(
+                Div(
+                "chosen_tag_0", 
+                "chosen_tag_1",
+                "chosen_tag_2",
+                css_id="hidden_inputs"
+                ), css_id="chosen_tags", css_class="mb-3"),
             Field('image'),
             Submit('submit', 'Create', css_class='btn btn-primary mb-2 d-inline'),
             Submit('submit', 'Draft', css_class='btn btn-primary mb-2 d-inline')
         )
-        
-    def clean_content(self):
-        content : str = self.cleaned_data["content"]
-        content = content.strip()
-        return content

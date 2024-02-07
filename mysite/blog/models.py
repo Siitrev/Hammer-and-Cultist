@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify 
 
 # Create your models here.
 STATUS = (
     (0,"Draft"),
     (1,"Publish"),
-    (2,"Waiting")
+    (2,"Waiting for approval"),
+    (3,"Watitng for deletion")
 )
 
 class TitleCharField(models.CharField):
@@ -32,6 +34,10 @@ class Post(models.Model):
     likes = models.IntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=STATUS, default=0)
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Post, self).save(*args, **kwargs)
     
     class Meta:
         verbose_name = ("Post")

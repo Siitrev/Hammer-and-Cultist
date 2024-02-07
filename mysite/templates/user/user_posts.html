@@ -3,12 +3,21 @@
 <section class="container my-posts h-75 overflow-y-auto overflow-x-hidden mb-2 mt-4 shadow border border-gray g-0">
     <div class="row g-0">
         {% for post in post_list %}
-        <div class="col pb-3">
+        <div class="col-12 pb-3">
             <div class="rounded-0 border-0 border-bottom card shadow-none h-100">
                 <div class="row g-0">
                     <div class="col">
                         <div class="card-body d-flex flex-column h-100">
                             <h2 class="card-title fs-5">{{ post.title }}</h2>
+                            <p class="card-text">
+                                {% if post.status == 1 %}
+                                    Post is published.
+                                {% elif post.status == 2 %}
+                                    Post was send to administration.
+                                {% else %}
+                                    Draft.
+                                {% endif %}
+                            </p>
                             <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
                             <div>
                                 <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-baseline d-inline">Read</a>

@@ -136,7 +136,7 @@ def user_profile(request : HttpRequest, username):
         user_profile = User.objects.get(username=username)
     except User.DoesNotExist:
         return HttpResponse("Given user does not exist.")
-    user_posts = Post.objects.filter(author = user_profile.pk).order_by("-likes")[:3]
+    user_posts = Post.objects.filter(author = user_profile.pk, status=1).order_by("-likes")[:3]
     return render(request=request, template_name="user/user_profile.html", context={"username" : username, "user_profile":user_profile, "user_posts": user_posts})
 
 class UserPosts(LoginRequiredMixin, generic.ListView):
@@ -144,6 +144,6 @@ class UserPosts(LoginRequiredMixin, generic.ListView):
     
     def get_queryset(self) -> QuerySet[Any]:
         user = self.kwargs["username"]
-        queryset = Post.objects.filter(author_id__username=user)
+        queryset = Post.objects.filter(author_id__username=user).order_by("-created_on")
         return queryset
     

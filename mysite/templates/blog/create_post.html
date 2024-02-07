@@ -6,10 +6,11 @@
 
 <div class="container py-5">
     <h1>Create post</h1>
-    <form method="POST" enctype="multipart/form-data">
+    <form id="post-creation-form" method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		{% crispy create_post_form %}  
 	</form>
 </div>
-
+{% load static %}
+<script src="{% static 'js/handle_chosen_tags.js' %}"></script>
 {% endblock content %}

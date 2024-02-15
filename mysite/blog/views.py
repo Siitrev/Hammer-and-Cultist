@@ -2,7 +2,7 @@ from typing import Any
 from django.shortcuts import render, redirect, HttpResponse
 from django.views import generic
 from django.http import HttpRequest, HttpResponse
-from .models import Post, Tag, TagsToPost
+from .models import Post, Tag, TagsToPost, PostLikes
 from .forms import CreatePostForm
 from user.models import Comment
 from django.db.models.functions import Lower
@@ -12,6 +12,7 @@ from .handle_file import save_file
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 import json, datetime
+import time
 # Create your views here.
 
 class PostList(generic.ListView):
@@ -33,12 +34,45 @@ class PostDetail(generic.DetailView):
         context = super().get_context_data(**kwargs)
         post_id = context["post"].id
         context["comments_len"] = len(Comment.objects.filter(post_id=post_id))
+        context["liked"] = False
         return context
     
     def get(self, request : HttpRequest, slug):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
+        user : User = request.user
+        post : Post = context.get("post")
+        if PostLikes.objects.filter(post_id=post.pk, user_id=user.pk):
+            context["liked"] = True
         return render(request, self.template_name, context=context)
+    
+    def put(self, request : HttpRequest, slug):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        post : Post = context.get("post")
+        try:
+            if not request.user.is_authenticated:
+               raise User.DoesNotExist
+            post.likes += 1
+            PostLikes.objects.create(post_id=post, user_id=request.user)
+            post.save()
+        except User.DoesNotExist as e:
+            pass
+        return HttpResponse(f"{post.likes}", status=200)
+    
+    def delete(self, request : HttpRequest, slug):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        post : Post = context.get("post")
+        try:
+            if not request.user.is_authenticated:
+               raise User.DoesNotExist
+            post.likes -= 1
+            PostLikes.objects.filter(post_id=post, user_id=request.user).delete()
+            post.save()
+        except User.DoesNotExist as e:
+            pass
+        return HttpResponse(f"{post.likes}", status=200)
     
 def post_comments(request : HttpRequest, post_id):
         if request.method == "GET":
@@ -62,7 +96,7 @@ def search_posts(request : HttpRequest):
         res : dict = json.loads(request.body)
         
         post_list = Post.objects.all()
-        
+        #time.sleep(2)
         order = ""
         if res["order"] == "desc":
             order = "-"

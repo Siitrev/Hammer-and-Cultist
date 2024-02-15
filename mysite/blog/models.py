@@ -68,5 +68,9 @@ class TagsToPost(models.Model):
         return f"{self.post} {self.tag}" 
     
  
+class PostLikes(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+
 
 

@@ -30,7 +30,6 @@ async function filterPosts(first_load = false){
   request["filters"] = filters;
   
   let json = JSON.stringify(request);
-  console.log(json);
 
   xhr.open("POST", url); 
 

@@ -1,6 +1,7 @@
 {% extends 'base.html' %} 
 {% block content %}
 
+{% csrf_token %}
 <div class="container">
   <div class="row g-0 mb-2">
     <div class="col-md-12 card mb-4 mt-3">
@@ -8,6 +9,8 @@
         <h1>{{ post.title }}</h1>
         <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
         <p class="card-text ">{{ post.content | safe }}</p>
+        <p id="like-count" class="text-muted">Likes: {{ post.likes }}</p>
+        {% if user.is_authenticated %}<button id="like-controller" value="{% if liked %}dislike{% else %}like{% endif %}" class="btn btn-primary">Like</button> {% endif %}
       </div>
     </div>
     <section class="comments">
@@ -33,6 +36,7 @@
     button.setAttribute("value", maxComs);
     return response.text(); 
   }
+  
   function getComments(){
     getData().then(res=>{
       if(res != undefined){
@@ -42,4 +46,6 @@
   }
   getComments();
 </script>
+{% load static %}
+<script src="{% static 'js/count_likes.js' %}"></script> 
 {% endblock content %}

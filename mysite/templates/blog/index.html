@@ -61,11 +61,14 @@
                                     <img src="{{ post.image.url }}" class="img-fluid rounded-start" alt="Thumbnail">
                                 </div>
                                 <div class="col-7">
-                                    <div class="card-body h-100">
-                                      <h2 class="card-title">{{ post.title }}</h2>
-                                      <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
-                                      <p class="card-text">{{post.content|slice:":200" }}{% if post.content|length > 199 %}&hellip;{% endif %}</p>
-                                      <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
+                                    <div class="d-flex flex-row flex-wrap h-100">
+                                        <div class="card-body w-100 h-75">
+                                            <h2 class="card-title">{{ post.title }}</h2>
+                                            <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
+                                            <p class="card-text">{{post.content|slice:":400" }}{% if post.content|length > 399 %}&hellip;{% endif %}</p>
+                                            
+                                        </div>
+                                        <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-end m-3">Read More &rarr;</a>
                                     </div>
                                 </div>
                             </div>       

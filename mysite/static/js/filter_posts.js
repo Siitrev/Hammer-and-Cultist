@@ -1,4 +1,4 @@
-async function filterPosts(first_load = false){
+async function filterPosts(first_load = false, btn = undefined){
   const xhr = new XMLHttpRequest();
   let url = window.location.href + "sort/posts";
   if (first_load){
@@ -13,8 +13,13 @@ async function filterPosts(first_load = false){
         console.log(`Error: ${xhr.status}`);
       }
     };
-    return
+    return;
   }
+  
+  if(btn === undefined){
+    return;
+  }
+  
   const form = document.getElementById("sortForm");
   const formData = new FormData(form);
   let spinner = document.getElementsByClassName("loading")[0]
@@ -28,7 +33,14 @@ async function filterPosts(first_load = false){
   request["sort"] = sortSelect;
   request["order"] = sortDirection;
   request["filters"] = filters;
+  request["search"] = "";
+  if (btn.id="search-btn"){
+    let search_value = document.getElementById("search-bar").value;
+    search_value = search_value.trim();
+    request["search"] = search_value;
+  }
   
+
   let json = JSON.stringify(request);
 
   xhr.open("POST", url); 

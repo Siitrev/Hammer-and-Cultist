@@ -57,7 +57,7 @@ class PostDetail(generic.DetailView):
             PostLikes.objects.create(post_id=post, user_id=request.user)
             post.save()
         except User.DoesNotExist as e:
-            pass
+            return HttpResponse(f"Forbidden", status=403)
         return HttpResponse(f"{post.likes}", status=200)
     
     def delete(self, request : HttpRequest, slug):
@@ -71,7 +71,7 @@ class PostDetail(generic.DetailView):
             PostLikes.objects.filter(post_id=post, user_id=request.user).delete()
             post.save()
         except User.DoesNotExist as e:
-            pass
+            return HttpResponse(f"Forbidden", status=403)
         return HttpResponse(f"{post.likes}", status=200)
     
 def post_comments(request : HttpRequest, post_id):
@@ -96,7 +96,6 @@ def search_posts(request : HttpRequest):
         res : dict = json.loads(request.body)
         
         post_list = Post.objects.all()
-        #time.sleep(2)
         order = ""
         if res["order"] == "desc":
             order = "-"
@@ -115,6 +114,9 @@ def search_posts(request : HttpRequest):
         for tag in filters:
             post_list = post_list.filter(tag__id=tag)
             
+        
+        if res["search"] or res["search"] != "":
+            post_list = post_list.filter(title__contains=res["search"])
         
         return render(request,"blog/all_posts.html", context={"post_list":post_list})
     return HttpResponse("Error. No get request")

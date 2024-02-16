@@ -87,9 +87,12 @@ def post_comments(request : HttpRequest, post_id):
 
 def search_posts(request : HttpRequest):
     if request.method == "GET":
-        if len(request.GET) == 0:
+        get_parameters = len(request.GET)
+        if get_parameters == 0:
             post_list = Post.objects.filter(status=1)
             return render(request,"blog/all_posts.html", context={"post_list":post_list})
+        elif get_parameters == 1:
+            pass
         return HttpResponse("Too many get parameters.")
     
     if request.method == "POST":
@@ -117,6 +120,8 @@ def search_posts(request : HttpRequest):
         
         if res["search"] or res["search"] != "":
             post_list = post_list.filter(title__contains=res["search"])
+            
+        
         
         return render(request,"blog/all_posts.html", context={"post_list":post_list})
     return HttpResponse("Error. No get request")

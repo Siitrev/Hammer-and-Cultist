@@ -21,31 +21,10 @@
     <button type="button" form="moreComments" onclick="getComments()" id="maxCom" name="maxCom" value="0">Show more comments</button>
   </div>
 </div>
-<script>
-  async function getData() {
-    let url = "{% url 'post-comments' post.id %}";
-    let button = document.getElementById("maxCom");
-    let maxComs = parseInt(button.value) + 10;
-    let comments = parseInt("{{ comments_len }}");
-    if (maxComs >= comments){
-      button.setAttribute("class", "d-none");
-    }
-    const response = await fetch(url + "?" + new URLSearchParams({maxCom : maxComs}), {
-      method: "GET"
-    });
-    button.setAttribute("value", maxComs);
-    return response.text(); 
-  }
-  
-  function getComments(){
-    getData().then(res=>{
-      if(res != undefined){
-        document.querySelectorAll("section.comments")[0].innerHTML = res;
-      }
-    });
-  }
-  getComments();
-</script>
 {% load static %}
 <script src="{% static 'js/count_likes.js' %}"></script> 
+<script src="{% static 'js/get_post_comments.js' %}"
+        defer
+        data-url="{% url 'post-comments' post.id %}"
+        data-comments-len="{{ comments_len }}"></script>
 {% endblock content %}

@@ -101,57 +101,56 @@
 
 <!-- All posts container -->
 <div class="container bg-light">
-    <div class="row justify-content-center">
-        <!-- Sort column -->
-        <div class="col-12">
-            <div class="input-group my-3">
-                <button class="btn btn-outline-secondary" onclick="filterPosts(false, this)" type="button" id="search-button">Search</button>
-                <input type="text" class="form-control" placeholder="Search..." id="search-bar">
+    <form action="" method="get" enctype="application/x-www-form-urlencoded" id="sortForm">
+        <div class="row justify-content-center">  
+            <!-- Sort column -->
+            <div class="col-12">
+                <div class="input-group my-3">
+                    <button class="btn btn-outline-secondary" onclick="filterPosts()" type="button" id="search-button">Search</button>
+                    <input type="text" class="form-control" placeholder="Search..." id="search-bar" name="search">
+                </div>
             </div>
-        </div>
-        <div class="col-12 col-lg-3 mb-3">
-            <form action="" method="get" id="sortForm">
-                {% csrf_token %}
+            <div class="col-3 col-lg-3 mb-3">
                 <div class="accordion" id="sortAccordion">
                     <div class="accordion-item">
-                      <h2 class="accordion-header">
+                        <h2 class="accordion-header">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                          Sort
+                            Sort
                         </button>
-                      </h2>
+                        </h2>
                     <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#sortAccordion">
                         <div class="accordion-body">
                             <div class="form-floating mb-2">
                                 <select class="form-select" name="sort" id="sort" aria-label="Floating select">
-                                  <option value="date">Date</option>
-                                  <option value="author">Author</option>
-                                  <option value="title">Title</option>
+                                    <option value="date">Date</option>
+                                    <option value="author">Author</option>
+                                    <option value="title">Title</option>
                                 </select>
                                 <label for="sort">Sort by:</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="order" value="desc" id="flexRadioDefault1" checked>
                                 <label class="form-check-label" for="order">
-                                  Descending
+                                    Descending
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="order" value="asc" id="flexRadioDefault2">
                                 <label class="form-check-label" for="order">
-                                  Ascending
+                                    Ascending
                                 </label>
                             </div>                                                                                                                   
                         </div>
-                      </div>
+                        </div>
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                             Filter
-                          </button>
+                            </button>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#sortAccordion">
-                          <div class="accordion-body">
+                            <div class="accordion-body">
                             {% for tag in tag_list %}
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="filter" value="{{ tag.id }}" id="{{ tag.slug }}-check">
@@ -160,26 +159,30 @@
                                 </label>
                             </div>
                             {% endfor %}         
-                          </div>
+                            </div>
                         </div>
                     </div>                
                 </div>    
-                <button class="btn btn-outline-secondary rounded-pill w-100 mt-3" type="button" onclick="filterPosts(false,this)" id="apply-button">Apply</button>               
-            </form>
-        </div>
-        <!-- Posts column -->
-        <div class="col-12 col-lg-9 position-rel">
-            <section class="all-posts">
-
-            </section>
-            <div class="blur" id="blur"></div>
-            <div class="spinner-border loading" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <button class="btn btn-outline-secondary rounded-pill w-100 mt-3" type="button" onclick="filterPosts()" id="apply-button">Apply</button>               
+            </div>
+            <!-- Posts column -->
+            <div class="col-9 col-lg-9 position-rel">
+                <section class="all-posts">
+                    {% include 'blog/all_posts.html' %}
+                </section>
+                <div class="blur" id="blur"></div>
+                <div class="spinner-border loading" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <section class="page-controller">
+                    
+                </section>
+                <input type="submit" value="">
             </div>
         </div>
-    </div>
+    </form>
 </div>
 {% load static %}
-<script src="{% static 'js/filter_posts.js' %}"></script> 
+<script src="{% static 'js/filter_posts.js' %}"></script>
 <script src="{% static 'js/disable_checkboxes.js' %}"></script>
 {%endblock content %}

@@ -1,65 +1,50 @@
-async function filterPosts(first_load = false, btn = undefined){
-  const xhr = new XMLHttpRequest();
-  let url = window.location.href + "sort/posts";
-  if (first_load){
-    xhr.open("GET", url);
-    xhr.send(); 
-    xhr.responseType = "text";
-    xhr.onload = () => {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        const data = xhr.response;
-        document.querySelector("section.all-posts").innerHTML = data;
-      } else {
-        console.log(`Error: ${xhr.status}`);
-      }
-    };
-    return;
-  }
-  
-  if(btn === undefined){
-    return;
-  }
-  
-  const form = document.getElementById("sortForm");
-  const formData = new FormData(form);
+async function filterPosts(){
   let spinner = document.getElementsByClassName("loading")[0]
   let blur = document.getElementsByClassName("blur")[0]
   spinner.style.visibility = "visible";
   blur.style.visibility = "visible";
-  request = {};
-  let sortSelect = formData.get("sort");
-  let sortDirection = formData.get("order");
-  let filters = formData.getAll("filter");
-  request["sort"] = sortSelect;
-  request["order"] = sortDirection;
-  request["filters"] = filters;
-  request["search"] = "";
-  if (btn.id="search-btn"){
-    let search_value = document.getElementById("search-bar").value;
-    search_value = search_value.trim();
-    request["search"] = search_value;
+
+  const filterForm = new FormData(document.getElementById("sortForm"));
+  let sort = filterForm.get("sort");
+  let order = filterForm.get("order");
+  let search = filterForm.get("search");
+  let filter = Array(filterForm.getAll("filter"));
+
+  let params = new URLSearchParams({"sort":sort,"order":order, "no-refresh": 1});
+  
+  if (search != null && search != undefined && search != ""){
+    search.trim();
+    search = encodeURIComponent(search);
+    params.append("search",search)
   }
   
 
-  let json = JSON.stringify(request);
+  let url = window.location.origin + window.location.pathname;
+  url += "?" + params;
+  let new_filter = "";
+  filter.forEach(val =>{
+    new_filter += "&";
+    new_filter += "filter="+val;
+  });
 
-  xhr.open("POST", url); 
+  new_filter = new_filter.replaceAll(",", "&filter=")
+  url = url + new_filter
 
-  let csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
-  
-  xhr.setRequestHeader("X-CSRFToken", csrfToken); 
-  xhr.setRequestHeader("Accept", "application/json");
-  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhr.send(json);
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", url);
+  xhr.send(); 
+  xhr.responseType = "text";
   xhr.onload = () => {
     if (xhr.readyState == 4 && xhr.status == 200) {
       const data = xhr.response;
       document.querySelector("section.all-posts").innerHTML = data;
+      url = url.replace("&no-refresh=1","");
+      history.pushState(history.state, '', url);
       spinner.style.visibility = "hidden";
       blur.style.visibility = "hidden";
     } else {
       console.log(`Error: ${xhr.status}`);
     }
-  };
+    return;
+  }
 }
-filterPosts(true)

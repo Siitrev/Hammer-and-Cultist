@@ -12,7 +12,7 @@ from .handle_file import save_file
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 import json, datetime
-import time
+import time, math, urllib
 # Create your views here.
 
 class PostList(generic.ListView):
@@ -24,7 +24,47 @@ class PostList(generic.ListView):
         context = self.get_context_data(object_list=queryset)
         tags = Tag.objects.all().values().order_by("name")
         context.update({"tag_list" :tags})
+        
+        post_list = Post.objects.filter(status=1)
+        num_of_pages = math.ceil(len(post_list)/6)
+        page_range = range(num_of_pages)
+        
+        req = request.GET
+        if len(req):
+            if "filter" in req:
+                filters : list = req.getlist("filter")[:3]
+                for tag in filters:
+                    if tag != "":
+                        post_list = post_list.filter(tag__id=tag)
+            
+            if "search" in req:    
+                if req["search"] or req["search"] != "":
+                    search = urllib.parse.unquote(req["search"])
+                    post_list = post_list.filter(title__contains=search)
+            
+            order = ""
+            if req["order"] == "desc":
+                order = "-"
+        
+            match req["sort"]:
+                case "date":
+                    post_list = post_list.order_by(f"{order}created_on")
+                case "author":
+                    if order == "-":
+                        post_list = post_list.order_by(Lower("author_id__username")).reverse()
+                    else:
+                        post_list = post_list.order_by(Lower("author_id__username"))
+                case "title":
+                    post_list = post_list.order_by(f"{order}slug")
+                    
+            
+            
+        context.update({"search_post_list":post_list[:6], "page_range": page_range })
+        
+        if "no-refresh" in req:
+            return render(request, "blog/all_posts.html", context=context)
         return render(request, self.template_name, context=context)
+        # return HttpResponse("Error. No get request")
     
 class PostDetail(generic.DetailView):
     model = Post
@@ -84,47 +124,6 @@ def post_comments(request : HttpRequest, post_id):
             return render(request,"blog/post_comments.html", context=context)
         return HttpResponse("Error. No get request", status=405)
     
-
-def search_posts(request : HttpRequest):
-    if request.method == "GET":
-        get_parameters = len(request.GET)
-        if get_parameters == 0:
-            post_list = Post.objects.filter(status=1)
-            return render(request,"blog/all_posts.html", context={"post_list":post_list})
-        elif get_parameters == 1:
-            pass
-        return HttpResponse("Too many get parameters.")
-    
-    if request.method == "POST":
-        res : dict = json.loads(request.body)
-        
-        post_list = Post.objects.all()
-        order = ""
-        if res["order"] == "desc":
-            order = "-"
-        match res["sort"]:
-            case "date":
-                post_list = post_list.order_by(f"{order}created_on")
-            case "author":
-                if order == "-":
-                    post_list = post_list.order_by(Lower("author_id__username")).reverse()
-                else:
-                    post_list = post_list.order_by(Lower("author_id__username"))
-            case "title":
-                post_list = post_list.order_by(f"{order}slug")
-        
-        filters : list = res["filters"]
-        for tag in filters:
-            post_list = post_list.filter(tag__id=tag)
-            
-        
-        if res["search"] or res["search"] != "":
-            post_list = post_list.filter(title__contains=res["search"])
-            
-        
-        
-        return render(request,"blog/all_posts.html", context={"post_list":post_list})
-    return HttpResponse("Error. No get request")
 
 def index(request : HttpRequest):
     return redirect("home")

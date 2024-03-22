@@ -9,7 +9,6 @@ function remove_post(self, username, post_id){
     xhr.send("delete");
     xhr.onload = () => {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            console.log("Woohoo")
             self.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.remove()
         } else {
             console.log(`Error: ${xhr.status}`);

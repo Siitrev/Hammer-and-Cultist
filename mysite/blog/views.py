@@ -22,13 +22,16 @@ class PostList(generic.ListView):
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         queryset = self.get_queryset()
         context = self.get_context_data(object_list=queryset)
+
+        page_number = 1
+        if "number" in kwargs:
+            page_number = kwargs.get("number")
+        
         tags = Tag.objects.all().values().order_by("name")
         context.update({"tag_list" :tags})
         
         post_list = Post.objects.filter(status=1)
-        num_of_pages = math.ceil(len(post_list)/6)
-        page_range = range(num_of_pages)
-        
+
         req = request.GET
         if len(req):
             if "filter" in req:
@@ -56,10 +59,11 @@ class PostList(generic.ListView):
                         post_list = post_list.order_by(Lower("author_id__username"))
                 case "title":
                     post_list = post_list.order_by(f"{order}slug")
-                    
             
+        num_of_pages = math.ceil(len(post_list)/6) 
             
-        context.update({"search_post_list":post_list[:6], "page_range": page_range })
+        
+        context.update({"search_post_list":post_list[(page_number-1)*6:page_number*6], "next_page" : page_number +1, "previous_page" : page_number -1, "active_page": page_number, "last_page":  num_of_pages})
         
         if "no-refresh" in req:
             return render(request, "blog/all_posts.html", context=context)

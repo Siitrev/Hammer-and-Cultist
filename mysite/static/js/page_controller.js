@@ -4,6 +4,9 @@ async function controller(action){
     if(page_index != -1){
         console.log(page_index)
         let new_page_num = parseInt(url.substring(page_index+5, url.indexOf("?")));
+        if (isNaN(new_page_num )){
+            new_page_num = parseInt(url.substring(url.lastIndexOf("/")+1));
+        }
         if (action === "next"){
             new_page_num = new_page_num + 1;
             url = url.replace(/\/page\/\d/,`/page/${new_page_num}`);

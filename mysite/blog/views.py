@@ -115,14 +115,13 @@ class PostDetail(generic.DetailView):
             context["liked"] = True
         
         form = CreateCommentForm(request.POST)
-        print(form)
+
         if form.is_valid():
             comment = form.cleaned_data.get("content")
             
             if not comment:
-                print(comment)
                 form.add_error("content","Comment can't be empty.")
-                context["comment_form"] = CreateCommentForm()
+                context["comment_form"] = form
                 return render(request, self.template_name, context=context)
             
             Comment.objects.create(
@@ -132,7 +131,7 @@ class PostDetail(generic.DetailView):
             )
         
         context["comment_form"] = CreateCommentForm() 
-        return render(request, self.template_name, context=context)
+        return redirect("post-detail", slug=post.slug)
 
     def put(self, request: HttpRequest, slug):
         self.object = self.get_object()
@@ -170,7 +169,7 @@ def post_comments(request: HttpRequest, post_id):
         if maxCom - 1 >= len(comments):
             maxCom = len(comments)
         context = {
-            "comments": Comment.objects.filter(post_id=post_id).order_by("created_on")[
+            "comments": Comment.objects.filter(post_id=post_id).order_by("-created_on")[
                 :maxCom
             ]
         }

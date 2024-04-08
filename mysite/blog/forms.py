@@ -47,3 +47,16 @@ class CreatePostForm(forms.Form):
             Submit('submit', 'Create', css_class='btn btn-primary mb-2 d-inline'),
             Submit('submit', 'Draft', css_class='btn btn-primary mb-2 d-inline')
         )
+        
+class CreateCommentForm(forms.Form):
+    content = forms.CharField(max_length=1000,required=False, widget=forms.Textarea(attrs={"placeholder":"Leave a comment...", "rows" : "3"}))
+    
+    def __init__(self, *args, **kwargs):
+        super(CreateCommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.fields['content'].label = False
+        self.helper.layout = Layout(
+            Field('content', css_class="resize-0"),
+            Submit('submit', 'Create', css_class='btn btn-primary mb-2'),
+        )

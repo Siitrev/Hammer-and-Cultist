@@ -208,11 +208,13 @@ def create_post(request: HttpRequest, username: str):
         title = form.cleaned_data.get("title")
         content = form.cleaned_data.get("content")
 
-        match form.data.get("submit"):
-            case "Create":
-                status = 2
-            case "Draft":
-                status = 0
+        draft = form.data.get("draft")
+        
+        status = 2
+        if draft:
+            status = 0
+
+        print(form.errors)
 
         today = datetime.datetime.now()
 

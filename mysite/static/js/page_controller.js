@@ -26,5 +26,8 @@ async function controller(action){
             url = url.replace(/\/blog\//,`/blog/page/2`);
         }
     }
+    if (!url.endsWith("#sortForm")){
+        url += "#sortForm"
+    }
     document.location.assign(url);
 }

@@ -1,7 +1,7 @@
 from django import forms
 from .models import TagsToPost, Post, Tag
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, Div
+from crispy_forms.layout import Layout, Field, Submit, Div, Button
 
 class TagsToPostForm(forms.ModelForm):
     model = TagsToPost
@@ -28,6 +28,7 @@ class CreatePostForm(forms.Form):
     chosen_tag_0 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     chosen_tag_1 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     chosen_tag_2 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
+    draft = forms.BooleanField(required=None)
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -44,8 +45,10 @@ class CreatePostForm(forms.Form):
                 css_id="hidden_inputs"
                 ), css_id="chosen_tags", css_class="mb-3"),
             Field('image'),
+            Field('draft'),
             Submit('submit', 'Create', css_class='btn btn-primary mb-2 d-inline'),
-            Submit('submit', 'Draft', css_class='btn btn-primary mb-2 d-inline')
+            Button('cancel', 'Cancel', css_id="cancel-btn", css_class='btn btn-danger mb-2 d-inline'),
+            
         )
         
 class CreateCommentForm(forms.Form):

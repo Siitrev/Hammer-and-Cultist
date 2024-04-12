@@ -252,12 +252,31 @@ def create_post(request: HttpRequest, username: str):
 
 
 @login_required(login_url="/user/login/")
-def delete_post(request: HttpRequest, username: str, pk):
+def edit_post(request: HttpRequest, username: str, pk: int):
     try:
         user = User.objects.filter(username=username, pk=request.user.pk).get()
     except User.DoesNotExist:
         return HttpResponse("Forbidden resource", status=403)
-    pass
+    
+    user_post = Post.objects.filter(pk=pk).get()
+    
+    form = CreatePostForm(initial={
+        "title" : user_post.title,
+        "content": user_post.content,
+        "thumbnail" : user_post.image,
+        "draft": True,
+        "submit": "Update",
+    })
+    
+    
+    return render(request=request, template_name="blog/create_post.html", context={"create_post_form": form})
+
+@login_required(login_url="/user/login/")
+def delete_post(request: HttpRequest, username: str, pk: int):
+    try:
+        user = User.objects.filter(username=username, pk=request.user.pk).get()
+    except User.DoesNotExist:
+        return HttpResponse("Forbidden resource", status=403)
 
     if request.method == "DELETE":
         Post.objects.filter(id=pk).delete()

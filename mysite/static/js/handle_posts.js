@@ -15,3 +15,7 @@ function remove_post(self, username, post_id){
         }
     };
 }
+
+function edit_post(self, username, post_id){
+    
+}

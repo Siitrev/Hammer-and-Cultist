@@ -21,7 +21,11 @@
                             </p>
                             <p class="card-text">{{post.content|slice:":80" }}{% if post.content|length > 79 %}&hellip;{% endif %}</p>
                             <div>
+                                {% if post.status == 0 %}
+                                <a href="{% url 'edit-post' user.username post.pk  %}" class="btn btn-primary align-self-baseline d-inline">Edit</a>
+                                {% else %}
                                 <a href="{% url 'post-detail' post.slug  %}" class="btn btn-primary align-self-baseline d-inline">Read</a>
+                                {% endif %}
                                 <button onclick="remove_post(this ,'{{ user.username }}', '{{post.pk}}')" class="btn btn-danger p-1 align-self-baseline d-inline">Delete post</button>
                             </div>
                         </div>
@@ -38,5 +42,5 @@
     </div>
 </section>
 {% load static %}
-<script src="{% static 'js/remove_post.js' %}"></script>
+<script src="{% static 'js/handle_posts.js' %}"></script>
 {% endblock content %}

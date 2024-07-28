@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify 
+from mysite.settings import GLOBAL_CONSTANTS
 
 # Create your models here.
 STATUS = (
@@ -29,7 +30,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length=200,unique=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blog_posts")
     updated_on = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to='media/featured_image/%Y/%m/%d/', default="static/images/temp-post.png")
+    image = models.ImageField(upload_to='media/featured_image/%Y/%m/%d/', default=GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"])
     content = models.TextField()
     likes = models.IntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)

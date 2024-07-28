@@ -146,3 +146,8 @@ EMAIL_HOST_USER='hammer.and.cultists@gmail.com'
 EMAIL_HOST_PASSWORD='zsbgvzqzarkiecom '
 
 LOGIN_URL = "/user/login"
+
+# Global Constants
+GLOBAL_CONSTANTS = {
+    "DEFAULT_THUMBNAIL_PATH" : "static/images/temp-post.png"
+}

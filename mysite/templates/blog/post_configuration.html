@@ -5,10 +5,10 @@
 {% load crispy_forms_tags %}
 
 <div class="container py-5">
-    <h1>Create post</h1>
+    <h1>{{ type }} post</h1>
     <form id="post-creation-form" method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
-		{% crispy create_post_form %}  
+		{% crispy post_configuration_form %}  
 	</form>
 </div>
 {% load static %}

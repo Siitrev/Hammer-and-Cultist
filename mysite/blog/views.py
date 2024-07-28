@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.views import generic
 from django.http import HttpRequest, HttpResponse
 from .models import Post, Tag, TagsToPost, PostLikes
-from .forms import CreatePostForm, CreateCommentForm
+from .forms import CreatePostForm, CreateCommentForm, UpdatePostForm
 from user.models import Comment
 from django.db.models.functions import Lower
 from django.core.exceptions import ValidationError
@@ -11,6 +11,7 @@ from django.db import IntegrityError
 from .handle_file import save_file
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from mysite.settings import GLOBAL_CONSTANTS
 import json, datetime
 import time, math, urllib
 
@@ -190,17 +191,19 @@ def create_post(request: HttpRequest, username: str):
 
     if request.method == "POST":
         form = CreatePostForm(request.POST, request.FILES)
-
+        
+        img = form.files.get("image", None)
         if form.is_valid():
-            img = form.files["image"]
             try:
-                img_path = save_file(img)
+                img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
+                if img:
+                    img_path = save_file(img)
             except ValidationError as e:
                 form.add_error("image", e)
                 return render(
                     request=request,
-                    template_name="blog/create_post.html",
-                    context={"create_post_form": form},
+                    template_name="blog/post_configuration.html",
+                    context={"type" : "Create", "post_configuration_form": form},
                 )
 
         user = User.objects.filter(username=username).get()
@@ -213,8 +216,6 @@ def create_post(request: HttpRequest, username: str):
         status = 2
         if draft:
             status = 0
-
-        print(form.errors)
 
         today = datetime.datetime.now()
 
@@ -232,8 +233,8 @@ def create_post(request: HttpRequest, username: str):
             form.add_error("title", "Post with given title already exists.")
             return render(
                 request=request,
-                template_name="blog/create_post.html",
-                context={"create_post_form": form},
+                template_name="blog/post_configuration.html",
+                context={"type" : "Create", "post_configuration_form": form},
             )
 
         for index in range(3):
@@ -246,8 +247,8 @@ def create_post(request: HttpRequest, username: str):
     form = CreatePostForm()
     return render(
         request=request,
-        template_name="blog/create_post.html",
-        context={"create_post_form": form},
+        template_name="blog/post_configuration.html",
+        context={"type" : "Create", "post_configuration_form": form},
     )
 
 
@@ -260,16 +261,59 @@ def edit_post(request: HttpRequest, username: str, pk: int):
     
     user_post = Post.objects.filter(pk=pk).get()
     
-    form = CreatePostForm(initial={
-        "title" : user_post.title,
-        "content": user_post.content,
-        "thumbnail" : user_post.image,
-        "draft": True,
-        "submit": "Update",
-    })
+    if request.method == "GET":
+        post_tags = TagsToPost.objects.filter(post = user_post)
+        
+        tags = ["", "", ""]
+        
+        for i in range(post_tags.count()):
+            tags[i] = str(post_tags[i].tag.pk)
+        
+        form = UpdatePostForm(initial={
+            "title" : user_post.title,
+            "content": user_post.content,
+            "image" : user_post.image,
+            "chosen_tag_0" : tags[0],
+            "chosen_tag_1" : tags[1],
+            "chosen_tag_2" : tags[2],
+            "submit": "Update",
+        })
     
+        return render(request=request, template_name="blog/post_configuration.html", context={"type" : "Update", "post_configuration_form": form})
     
-    return render(request=request, template_name="blog/create_post.html", context={"create_post_form": form})
+    if request.method == "POST":
+        form = UpdatePostForm(request.POST, request.FILES)
+        img = form.files.get("image", None)
+        if form.is_valid():
+            try:
+                img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
+                if img:
+                    img_path = save_file(img)
+            except ValidationError as e:
+                form.add_error("image", e)
+                return render(
+                    request=request,
+                    template_name="blog/post_configuration.html",
+                    context={"type" : "Update", "post_configuration_form": form},
+                )
+        
+        TagsToPost.objects.filter(post = user_post).delete()
+        
+        for index in range(3):
+            tag_id = form.cleaned_data.get(f"chosen_tag_{index}")
+            if tag_id is not None and tag_id != "":
+                tag = Tag.objects.filter(id=tag_id).get()
+                TagsToPost.objects.create(post=user_post, tag=tag)
+                
+        user_post.title = form.cleaned_data.get("title")
+        user_post.content = form.cleaned_data.get("content")
+        user_post.image = img_path
+        
+        user_post.save()
+                
+        return redirect("user-posts", username)
+        
+        
 
 @login_required(login_url="/user/login/")
 def delete_post(request: HttpRequest, username: str, pk: int):
@@ -281,3 +325,20 @@ def delete_post(request: HttpRequest, username: str, pk: int):
     if request.method == "DELETE":
         Post.objects.filter(id=pk).delete()
         return HttpResponse("Success", status=200)
+    
+
+@login_required(login_url="/user/login/")
+def publish_post(request: HttpRequest, username: str, pk: int):
+    try:
+        user = User.objects.filter(username=username, pk=request.user.pk).get()
+    except User.DoesNotExist:
+        return HttpResponse("Forbidden resource", status=403)
+
+    if request.method == "PATCH":
+        post : Post = Post.objects.filter(pk=pk)
+        post.status = 2
+        post.save()
+    
+    return redirect("user-posts", username)
+        
+        

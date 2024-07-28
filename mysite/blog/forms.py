@@ -23,12 +23,12 @@ class TagsToPostForm(forms.ModelForm):
 class CreatePostForm(forms.Form):
     title = forms.CharField(max_length=200, label="Title")
     content = forms.CharField(widget=forms.Textarea(attrs={"rows" : "15"}))
-    image = forms.ImageField(label="Thumbnail", allow_empty_file=False)
+    image = forms.ImageField(label="Thumbnail", allow_empty_file=False, required=False)
     tags = forms.ModelChoiceField(queryset=Tag.objects.order_by("name"), label="Tags", required=False, empty_label="Choose a tag:")
     chosen_tag_0 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     chosen_tag_1 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     chosen_tag_2 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
-    draft = forms.BooleanField(required=None)
+    draft = forms.BooleanField(required=False)
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,7 +50,37 @@ class CreatePostForm(forms.Form):
             Button('cancel', 'Cancel', css_id="cancel-btn", css_class='btn btn-danger mb-2 d-inline'),
             
         )
+ 
         
+class UpdatePostForm(forms.Form):
+    title = forms.CharField(max_length=200, label="Title")
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows" : "15"}))
+    image = forms.ImageField(label="Thumbnail", allow_empty_file=False, required=False)
+    tags = forms.ModelChoiceField(queryset=Tag.objects.order_by("name"), label="Tags", required=False, empty_label="Choose a tag:")
+    chosen_tag_0 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
+    chosen_tag_1 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
+    chosen_tag_2 = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('title'),
+            Field('content', css_class="resize-0"),
+            Field('tags'),
+            Div(
+                Div(
+                "chosen_tag_0", 
+                "chosen_tag_1",
+                "chosen_tag_2",
+                css_id="hidden_inputs"
+                ), css_id="chosen_tags", css_class="mb-3"),
+            Field('image'),
+            Submit('submit', 'Update', css_class='btn btn-primary mb-2 d-inline'),
+            Button('cancel', 'Cancel', css_id="cancel-btn", css_class='btn btn-danger mb-2 d-inline'),
+        )
+        
+
 class CreateCommentForm(forms.Form):
     content = forms.CharField(max_length=1000,required=False, widget=forms.Textarea(attrs={"placeholder":"Leave a comment...", "rows" : "3"}))
     

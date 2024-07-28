@@ -10,7 +10,6 @@ function handle_select(){
     }
     let array_of_inputs = Array.from(hidden_input_div.children);
     
-    let list_element = document.createElement("button");  
     let chosen_tag_input = array_of_inputs.find(input => {
         if (input.getAttribute("value") === ""){
             return true;

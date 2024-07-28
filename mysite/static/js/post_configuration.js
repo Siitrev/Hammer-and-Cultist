@@ -102,6 +102,7 @@ window.addEventListener("DOMContentLoaded", _ =>{
     let select = document.getElementById("id_tags");
     let hidden_input_div = document.getElementById("hidden_inputs");
     let array_of_inputs = Array.from(hidden_input_div.children);
+
     array_of_inputs.forEach(input =>{
         if (!input.hasAttribute("value"))
             input.setAttribute("value", "");
@@ -116,4 +117,6 @@ window.addEventListener("DOMContentLoaded", _ =>{
     select.value="";
 
     fill_on_load(select, array_of_inputs, list)
+
+    document.getElementById("image-clear_id").parentElement.remove()
 });

@@ -76,8 +76,9 @@ class UpdatePostForm(forms.Form):
                 css_id="hidden_inputs"
                 ), css_id="chosen_tags", css_class="mb-3"),
             Field('image'),
-            Submit('submit', 'Update', css_class='btn btn-primary mb-2 d-inline'),
-            Button('cancel', 'Cancel', css_id="cancel-btn", css_class='btn btn-danger mb-2 d-inline'),
+            Button('publish', 'Publish', css_id="publish-btn", css_class='btn btn-primary mb-2 me-1 d-inline'),
+            Submit('submit', 'Update', css_class='btn btn-primary mb-2 mx-1 d-inline'),
+            Button('cancel', 'Cancel', css_id="cancel-btn", css_class='btn btn-danger mb-2 mx-1 d-inline'),
         )
         
 

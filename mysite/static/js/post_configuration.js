@@ -1,27 +1,27 @@
 function handle_select(){
     let select = document.getElementById("id_tags");
     let list = document.getElementsByClassName("list-group")[0];
-    let hidden_input_div = document.getElementById("hidden_inputs");
+    let hiddenInputDiv = document.getElementById("hidden_inputs");
 
-    let selected_child = select.selectedOptions[0];
+    let selectedChild = select.selectedOptions[0];
 
-    if (selected_child.value === ""){
+    if (selectedChild.value === ""){
         return;
     }
-    let array_of_inputs = Array.from(hidden_input_div.children);
+    let arrayOfInputs = Array.from(hiddenInputDiv.children);
     
-    let chosen_tag_input = array_of_inputs.find(input => {
+    let chosen_tag_input = arrayOfInputs.find(input => {
         if (input.getAttribute("value") === ""){
             return true;
         }
         return false;
     });
 
-    chosen_tag_input.value = selected_child.value;
+    chosen_tag_input.value = selectedChild.value;
     
-    list.append(create_list_element(selected_child, select.selectedIndex));
+    list.append(createListElement(selectedChild, select.selectedIndex));
 
-    selected_child.disabled = true;
+    selectedChild.disabled = true;
 
     if (is_invalid_select()){
         select.disabled = true;
@@ -38,53 +38,53 @@ function is_invalid_select(){
     return false;
 }
 
-function create_list_element(option, position){
-    let list_element = document.createElement("button");  
-    list_element.innerHTML = option.innerHTML;
-    list_element.type = "button";
-    list_element.value = option.value;
-    list_element.setAttribute("position", position);
+function createListElement(option, position){
+    let listElement = document.createElement("button");  
+    listElement.innerHTML = option.innerHTML;
+    listElement.type = "button";
+    listElement.value = option.value;
+    listElement.setAttribute("position", position);
 
-    list_element.setAttribute("class", "list-group-item-action list-group-item w-dynamic");
-    list_element.addEventListener("pointerover", _ =>{ 
-        list_element.setAttribute("class", "list-group-item list-group-item-action list-group-item-danger w-dynamic");
+    listElement.setAttribute("class", "list-group-item-action list-group-item w-dynamic");
+    listElement.addEventListener("pointerover", _ =>{ 
+        listElement.setAttribute("class", "list-group-item list-group-item-action list-group-item-danger w-dynamic");
     });
-    list_element.addEventListener("pointerleave", _ =>{ 
-        list_element.setAttribute("class", "list-group-item list-group-item-action list-group-item w-dynamic");
+    listElement.addEventListener("pointerleave", _ =>{ 
+        listElement.setAttribute("class", "list-group-item list-group-item-action list-group-item w-dynamic");
     });
-    list_element.setAttribute("onclick","remove_selected_tag(this)");
-    return list_element
+    listElement.setAttribute("onclick","remove_selected_tag(this)");
+    return listElement
 }
 
-function remove_selected_tag(list_element){
+function remove_selected_tag(listElement){
     let select = document.getElementById("id_tags");
-    let position = parseInt(list_element.getAttribute("position"));
-    let hidden_input_div = document.getElementById("hidden_inputs");
-    let array_of_inputs = Array.from(hidden_input_div.children);
+    let position = parseInt(listElement.getAttribute("position"));
+    let hiddenInputDiv = document.getElementById("hidden_inputs");
+    let arrayOfInputs = Array.from(hiddenInputDiv.children);
 
-    let list_element_input = array_of_inputs.find(input =>{
-        if (input.value == list_element.value){
+    let listElementInput = arrayOfInputs.find(input =>{
+        if (input.value == listElement.value){
             return true;
         }
         return false;
     });
-    list_element_input.setAttribute("value", "");
+    listElementInput.setAttribute("value", "");
     
     if (select.disabled){
         select.disabled = false;
     }
     select.options[position].disabled = false;
-    list_element.remove();
+    listElement.remove();
 }
 
-function fill_on_load(select, array_of_inputs, list){
-    array_of_options = Array.from(select.options);
-    array_of_inputs.forEach(input => {
+function fill_on_load(select, arrayOfInputs, list){
+    arrayOfOptions = Array.from(select.options);
+    arrayOfInputs.forEach(input => {
         if (input.value !== ""){
             let position = 0; 
-            array_of_options.forEach(option => {
+            arrayOfOptions.forEach(option => {
                 if (option.value === input.value){
-                    list.append(create_list_element(option, position))
+                    list.append(createListElement(option, position))
                     option.disabled = true
                 }
                 position++;
@@ -100,10 +100,10 @@ function fill_on_load(select, array_of_inputs, list){
 window.addEventListener("DOMContentLoaded", _ =>{
     let list = document.createElement("ul");
     let select = document.getElementById("id_tags");
-    let hidden_input_div = document.getElementById("hidden_inputs");
-    let array_of_inputs = Array.from(hidden_input_div.children);
+    let hiddenInputDiv = document.getElementById("hidden_inputs");
+    let arrayOfInputs = Array.from(hiddenInputDiv.children);
 
-    array_of_inputs.forEach(input =>{
+    arrayOfInputs.forEach(input =>{
         if (!input.hasAttribute("value"))
             input.setAttribute("value", "");
     })
@@ -114,9 +114,13 @@ window.addEventListener("DOMContentLoaded", _ =>{
     document.getElementById("id_tags").name = "";
 
     select.addEventListener("change", handle_select);
-    select.value="";
+    select.value = "";
 
-    fill_on_load(select, array_of_inputs, list)
+    fill_on_load(select, arrayOfInputs, list);
 
-    document.getElementById("image-clear_id").parentElement.remove()
+    let imgClearSpan = document.getElementById("image-clear_id");
+
+    if (imgClearSpan !== null){
+        imgClearSpan.parentElement.remove();
+    }
 });

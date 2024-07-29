@@ -1,7 +1,7 @@
 from typing import Any
 from django.shortcuts import render, redirect, HttpResponse
 from django.views import generic
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from .models import Post, Tag, TagsToPost, PostLikes
 from .forms import CreatePostForm, CreateCommentForm, UpdatePostForm
 from user.models import Comment
@@ -11,6 +11,7 @@ from django.db import IntegrityError
 from .handle_file import save_file
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.urls import reverse
 from mysite.settings import GLOBAL_CONSTANTS
 import json, datetime
 import time, math, urllib
@@ -80,7 +81,6 @@ class PostList(generic.ListView):
         if "no-refresh" in req:
             return render(request, "blog/all_posts.html", context=context)
         return render(request, self.template_name, context=context)
-        # return HttpResponse("Error. No get request")
 
 
 class PostDetail(generic.DetailView):
@@ -335,10 +335,11 @@ def publish_post(request: HttpRequest, username: str, pk: int):
         return HttpResponse("Forbidden resource", status=403)
 
     if request.method == "PATCH":
-        post : Post = Post.objects.filter(pk=pk)
+        post = Post.objects.filter(pk=pk).get()
         post.status = 2
         post.save()
-    
-    return redirect("user-posts", username)
+        url = reverse("user-posts", args=[username])
+        
+        return HttpResponseRedirect(url, status=303)
         
         

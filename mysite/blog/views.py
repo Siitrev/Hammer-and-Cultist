@@ -7,6 +7,7 @@ from .forms import CreatePostForm, CreateCommentForm, UpdatePostForm
 from user.models import Comment
 from django.db.models.functions import Lower
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_delete
 from django.db import IntegrityError
 from .handle_file import save_file
 from django.contrib.auth.decorators import login_required

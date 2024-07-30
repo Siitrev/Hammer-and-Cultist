@@ -5,8 +5,7 @@ from django.forms import ValidationError
 #media/featured_image/%Y/%m/%d/
 
 def validate_filename(name) -> str:
-    filename : str  = urlsafe_base64_encode(force_bytes(name.strip()[:-4]))
-    extension : str = name.strip()[-4:]
+    filename : str = name.strip()[:-4]
     pattern = re.compile(r"^[A-Za-z0-9-]+$")
 
     if not re.match(pattern, filename):
@@ -15,7 +14,10 @@ def validate_filename(name) -> str:
     if len(filename) > 30:
         raise ValidationError(("Name of the file should be under 31 characters long."), code="too long filename")
     
-    return filename+extension
+    encoded_filename : str  = urlsafe_base64_encode(force_bytes(name.strip()[:-4]))
+    extension : str = name.strip()[-4:]
+    
+    return encoded_filename+extension
 
 def save_file(file):
     filename = validate_filename(file.name)

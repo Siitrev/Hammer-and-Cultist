@@ -192,19 +192,26 @@ def create_post(request: HttpRequest, username: str):
     if request.method == "POST":
         form = CreatePostForm(request.POST, request.FILES)
         
+        if not form.is_valid():
+            return render(
+                request=request,
+                template_name="blog/post_configuration.html",
+                context={"type" : "Create", "post_configuration_form": form},
+            )
+        
         img = form.files.get("image", None)
-        if form.is_valid():
-            try:
-                img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
-                if img:
-                    img_path = save_file(img)
-            except ValidationError as e:
-                form.add_error("image", e)
-                return render(
-                    request=request,
-                    template_name="blog/post_configuration.html",
-                    context={"type" : "Create", "post_configuration_form": form},
-                )
+       
+        try:
+            img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
+            if img:
+                img_path = save_file(img)
+        except ValidationError as e:
+            form.add_error("image", e)
+            return render(
+                request=request,
+                template_name="blog/post_configuration.html",
+                context={"type" : "Create", "post_configuration_form": form},
+            )
 
         user = User.objects.filter(username=username).get()
 
@@ -244,6 +251,7 @@ def create_post(request: HttpRequest, username: str):
                 TagsToPost.objects.create(post=created_post, tag=tag)
 
         return redirect("user-posts", username)
+    
     form = CreatePostForm()
     return render(
         request=request,
@@ -283,20 +291,28 @@ def edit_post(request: HttpRequest, username: str, pk: int):
     
     if request.method == "POST":
         form = UpdatePostForm(request.POST, request.FILES)
-        img = form.files.get("image", None)
-        if form.is_valid():
-            try:
-                img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
-                if img:
-                    img_path = save_file(img)
-            except ValidationError as e:
-                form.add_error("image", e)
-                return render(
-                    request=request,
-                    template_name="blog/post_configuration.html",
-                    context={"type" : "Update", "post_configuration_form": form},
-                )
         
+        if not form.is_valid():
+            return render(
+                request=request,
+                template_name="blog/post_configuration.html",
+                context={"type" : "Create", "post_configuration_form": form},
+            )
+        
+        img = form.files.get("image", None)
+            
+        try:
+            img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
+            if img:
+                img_path = save_file(img, user_post.pk)
+        except ValidationError as e:
+            form.add_error("image", e)
+            return render(
+                request=request,
+                template_name="blog/post_configuration.html",
+                context={"type" : "Update", "post_configuration_form": form},
+            )
+    
         TagsToPost.objects.filter(post = user_post).delete()
         
         for index in range(3):

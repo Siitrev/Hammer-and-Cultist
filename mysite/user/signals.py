@@ -23,7 +23,6 @@ def delete_old_file(sender, instance, **kwargs):
     # on creation, signal callback won't be triggered 
     if instance._state.adding and not instance.pk:
         return False
-    
     try:
         old_file = sender.objects.get(pk=instance.pk).avatar
     except sender.DoesNotExist:

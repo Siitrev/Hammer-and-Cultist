@@ -19,11 +19,14 @@ def validate_filename(name) -> str:
     
     return encoded_filename+extension
 
-def save_file(file):
-    filename = validate_filename(file.name)
+def save_file(file, slug, existing = False):
+    name = file.name
+    if existing:
+        name = os.path.basename(file.name)
+    filename = validate_filename(name)
     today = datetime.datetime.now()
     date = today.strftime("%Y/%m/%d")
-    path = f"media/featured_image/{date}"
+    path = f"media/featured_image/{date}/{slug}"
     if not os.path.exists(path):
         os.makedirs(path)
         

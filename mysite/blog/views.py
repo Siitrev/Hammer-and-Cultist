@@ -1,5 +1,6 @@
 from typing import Any
 from django.shortcuts import render, redirect, HttpResponse
+from django.utils.text import slugify 
 from django.views import generic
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from .models import Post, Tag, TagsToPost, PostLikes
@@ -14,9 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse
 from mysite.settings import GLOBAL_CONSTANTS
-import json, datetime
+import json, datetime, os
 import time, math, urllib
-
 # Create your views here.
 
 
@@ -205,7 +205,7 @@ def create_post(request: HttpRequest, username: str):
         try:
             img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
             if img:
-                img_path = save_file(img)
+                img_path = save_file(img, slugify(form.cleaned_data.get("title")))
         except ValidationError as e:
             form.add_error("image", e)
             return render(
@@ -301,11 +301,12 @@ def edit_post(request: HttpRequest, username: str, pk: int):
             )
         
         img = form.files.get("image", None)
-            
+        new_slug = slugify(form.cleaned_data.get("title"))        
         try:
-            img_path = GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"]
             if img:
-                img_path = save_file(img, user_post.pk)
+                img_path = save_file(img, new_slug) 
+            elif new_slug != user_post.slug:
+                img_path = save_file(user_post.image.file, new_slug, True)
         except ValidationError as e:
             form.add_error("image", e)
             return render(
@@ -324,7 +325,9 @@ def edit_post(request: HttpRequest, username: str, pk: int):
                 
         user_post.title = form.cleaned_data.get("title")
         user_post.content = form.cleaned_data.get("content")
-        user_post.image = img_path
+        
+        if img or new_slug != user_post.slug:
+            user_post.image = img_path
         
         user_post.save()
                 

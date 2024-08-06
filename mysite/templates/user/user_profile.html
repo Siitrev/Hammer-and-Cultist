@@ -20,7 +20,7 @@
             </div>
           </div>
           {% if user.is_authenticated and user.username == username %}
-          <a href="#" class="card-link">Edit profile</a>
+          <a href="{% url 'edit-user-profile' user.username %}" class="card-link">Edit profile</a>
           {% endif %}
         </div>
         <hr>

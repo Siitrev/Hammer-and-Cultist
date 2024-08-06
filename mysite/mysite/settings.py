@@ -149,5 +149,6 @@ LOGIN_URL = "/user/login"
 
 # Global Constants
 GLOBAL_CONSTANTS = {
-    "DEFAULT_THUMBNAIL_PATH" : "static/images/temp-post.png"
+    "DEFAULT_THUMBNAIL_PATH" : "static/images/temp-post.png",
+    "DEFAULT_AVATAR_PATH" : "static/images/default-profile-picture.png"
 }

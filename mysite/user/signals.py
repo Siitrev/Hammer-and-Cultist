@@ -2,6 +2,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
+from mysite.settings import GLOBAL_CONSTANTS
 import os
 from .models import Profile
 
@@ -33,3 +34,26 @@ def delete_old_file(sender, instance, **kwargs):
     if not old_file == file:
         if os.path.isfile(old_file.path):
             os.remove(old_file.path)
+            
+
+
+@receiver(pre_save, sender=User)
+def remove_old_file_and_path(sender, instance : User, **kwargs):
+    try:
+        old_user = User.objects.filter(pk = instance.pk).get()
+    except User.DoesNotExist:
+        return False
+    
+    if GLOBAL_CONSTANTS["DEFAULT_AVATAR_PATH"] in old_user.profile.avatar.path:
+        return False
+    
+    if old_user.profile.avatar.path == instance.profile.avatar.path:
+        return False
+    
+    if os.path.exists(old_user.profile.avatar.path):
+        os.remove(old_user.profile.avatar.path)
+        
+    parent_directory = os.path.dirname(old_user.profile.avatar.path)    
+        
+    if os.path.exists(parent_directory) and not os.listdir(parent_directory):
+        os.rmdir(parent_directory)

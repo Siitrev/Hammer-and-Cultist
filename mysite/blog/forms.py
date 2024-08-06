@@ -48,7 +48,6 @@ class CreatePostForm(forms.Form):
             Field('draft'),
             Submit('submit', 'Create', css_class='btn btn-primary mb-2 d-inline'),
             Button('cancel', 'Cancel', css_id="cancel-btn", css_class='btn btn-danger mb-2 d-inline'),
-            
         )
  
         

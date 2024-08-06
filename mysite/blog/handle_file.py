@@ -37,3 +37,20 @@ def save_file(file, slug, existing = False):
             image.write(chunk)
     
     return final_path
+
+def save_avatar(file, username, existing = False):
+    name = file.name
+    if existing:
+        name = os.path.basename(file.name)
+    filename = validate_filename(name)
+    path = f"media/avatar/{username}"
+    if not os.path.exists(path):
+        os.makedirs(path)
+        
+    final_path = f"{path}/{filename}"
+        
+    with open(final_path,"wb+") as image:
+        for chunk in file.chunks():
+            image.write(chunk)
+            
+    return final_path

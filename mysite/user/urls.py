@@ -10,5 +10,6 @@ urlpatterns = [
     path("reset-password/", views.password_reset_request, name="reset-password"),
     path("reset-password/<str:uidb64>/<str:token>/", views.password_reset_change, name="reset-password-change"),
     path("profile/<str:username>/", views.user_profile, name="user-profile"),
+    path("profile/<str:username>/edit", views.edit_user_profile, name="edit-user-profile"),
     path("<str:username>/posts/", views.UserPosts.as_view(), name="user-posts"),
 ]

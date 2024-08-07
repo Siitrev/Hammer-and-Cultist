@@ -326,7 +326,7 @@ def edit_post(request: HttpRequest, username: str, pk: int):
         user_post.title = form.cleaned_data.get("title")
         user_post.content = form.cleaned_data.get("content")
         
-        if img or new_slug != user_post.slug:
+        if img != user_post.image and (img or new_slug != user_post.slug):
             user_post.image = img_path
         
         user_post.save()

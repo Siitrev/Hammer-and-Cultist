@@ -7,13 +7,17 @@ from .models import Post
 
 @receiver(post_delete, sender=Post)
 def delete_thumbnail(sender, instance : Post, **kwargs):
-    if GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"] in instance.image.path:
+    global_path = os.path.normpath(GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"])
+    old_path = os.path.normpath(instance.image.path)
+    
+    
+    if global_path in old_path:
         return False
     
-    if os.path.exists(instance.image.path):
-        os.remove(instance.image.path)
+    if os.path.exists(old_path):
+        os.remove(old_path)
                 
-    parent_directory = os.path.dirname(instance.image.path)                
+    parent_directory = os.path.dirname(old_path)                
                     
     if os.path.exists(parent_directory) and not os.listdir(parent_directory):
         os.rmdir(parent_directory)
@@ -30,16 +34,20 @@ def remove_old_file_and_path(sender, instance : Post, **kwargs):
     except Post.DoesNotExist:
         return False
     
-    if GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"] in old_file.image.path:
+    global_path = os.path.normpath(GLOBAL_CONSTANTS["DEFAULT_THUMBNAIL_PATH"])
+    old_path = os.path.normpath(old_file.image.path)
+    new_path = os.path.normpath(instance.image.path)
+    
+    if global_path in old_path:
         return False
     
-    if old_file.image.path == instance.image.path:
+    if old_path == new_path:
         return False
     
-    if os.path.exists(old_file.image.path):
-        os.remove(old_file.image.path)
+    if os.path.exists(old_path):
+        os.remove(old_path)
         
-    parent_directory = os.path.dirname(old_file.image.path)    
+    parent_directory = os.path.dirname(old_path)    
         
     if os.path.exists(parent_directory) and not os.listdir(parent_directory):
         os.rmdir(parent_directory)

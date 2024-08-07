@@ -21,6 +21,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .token import account_activation_token, default_password_token
 from django.core.mail import EmailMessage
+from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse
 from blog.handle_file import save_avatar
 
@@ -265,17 +266,27 @@ def edit_user_profile(request: HttpRequest, username):
                 template_name="user/edit_user_profile.html",
                 context={
                     "edit_profile_form": form,
-            },
-        )
+                },
+            )
             
         user.username = new_username
         user.profile.bio = form.cleaned_data.get("bio")
-        if img or new_username != username:
+        if img != user.profile.avatar and (img or new_username != username):
             user.profile.avatar = img_path
         
-        user.save()
+        try:
+            user.save()
+        except IntegrityError as e:
+            form.add_error("username", "Username is already taken")
+            return render(
+                request=request,
+                template_name="user/edit_user_profile.html",
+                context={
+                    "edit_profile_form": form,
+                },
+            )
         
-        return redirect("user-profile", username)
+        return redirect("user-profile", new_username)
                 
                 
         

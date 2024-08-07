@@ -44,16 +44,20 @@ def remove_old_file_and_path(sender, instance : User, **kwargs):
     except User.DoesNotExist:
         return False
     
-    if GLOBAL_CONSTANTS["DEFAULT_AVATAR_PATH"] in old_user.profile.avatar.path:
+    global_path = os.path.normpath(GLOBAL_CONSTANTS["DEFAULT_AVATAR_PATH"])
+    old_path = os.path.normpath(old_user.profile.avatar.path)
+    new_path = os.path.normpath(instance.profile.avatar.path)
+    
+    if global_path in old_path:
         return False
     
-    if old_user.profile.avatar.path == instance.profile.avatar.path:
+    if old_path == new_path:
         return False
     
-    if os.path.exists(old_user.profile.avatar.path):
-        os.remove(old_user.profile.avatar.path)
+    if os.path.exists(old_path):
+        os.remove(old_path)
         
-    parent_directory = os.path.dirname(old_user.profile.avatar.path)    
+    parent_directory = os.path.dirname(old_path)    
         
     if os.path.exists(parent_directory) and not os.listdir(parent_directory):
         os.rmdir(parent_directory)

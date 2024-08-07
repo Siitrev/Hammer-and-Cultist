@@ -8,7 +8,7 @@ import datetime
 def img_path(instance, filename):
     ext = filename[-4:]
     filename = urlsafe_base64_encode(force_bytes(filename[:-4]))
-    return f"media/profile_image/{instance.user.username}/{filename}{ext}"
+    return f"media/avatar/{instance.user.username}/{filename}{ext}"
 
 # Create your models here.
 class Profile(models.Model):

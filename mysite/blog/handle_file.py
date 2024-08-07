@@ -11,8 +11,8 @@ def validate_filename(name) -> str:
     if not re.match(pattern, filename):
         raise ValidationError(("Name of the file should only contain alphanumerical characters or hyphens."), code="invalid filename")
     
-    if len(filename) > 30:
-        raise ValidationError(("Name of the file should be under 31 characters long."), code="too long filename")
+    if len(filename) > 100:
+        raise ValidationError(("Name of the file should be under 101 characters long."), code="too long filename")
     
     encoded_filename : str  = urlsafe_base64_encode(force_bytes(name.strip()[:-4]))
     extension : str = name.strip()[-4:]
